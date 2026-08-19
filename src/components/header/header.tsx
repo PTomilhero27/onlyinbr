@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sheet,
   SheetContent,
@@ -16,14 +17,15 @@ import { cn } from "@/lib/utils";
 
 /**
  * Header — Only in BR
- * Header sticky com visual leve em vidro fosco claro.
+ * Liquid Glass com animação de entrada expandindo do centro,
+ * e efeito de "salto" elevado + opaco ao scroll.
  */
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30);
+    const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -34,16 +36,28 @@ export function Header() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50",
-        "transition-all duration-300 ease-out",
-        scrolled ? "px-4 py-2.5 md:px-8" : "px-4 py-4 md:px-8"
+        "transition-all duration-500 ease-out",
+        scrolled ? "px-4 py-2 md:px-8" : "px-4 py-4 md:px-8"
       )}
     >
-      <div
+      {/* Animação de entrada: scaleX de 0 → 1 (do centro para fora) */}
+      <motion.div
+        initial={{ scaleX: 0, opacity: 0 }}
+        animate={{ scaleX: 1, opacity: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+        style={{ originX: 0.5 }}
         className={cn(
           "max-w-7xl mx-auto flex items-center justify-between",
-          "rounded-2xl transition-all duration-300",
+          "rounded-2xl transition-all duration-500",
           "px-5 py-2.5",
-          "liquid-glass-opaque border border-white/20 shadow-2xl"
+          // Scrolled: "salta" com translateY negativo, sombra grande, fundo bem opaco
+          scrolled
+            ? [
+                "liquid-glass-opaque border border-white/30 shadow-[0_8px_40px_rgba(0,0,0,0.55)]",
+                "-translate-y-0 scale-[0.985]",
+                "bg-[rgba(7,35,18,0.88)] backdrop-blur-2xl",
+              ].join(" ")
+            : "liquid-glass-opaque border border-white/20 shadow-2xl"
         )}
       >
         {/* Logo */}
@@ -73,7 +87,7 @@ export function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex">
-          <WhatsAppCTA context="hero" label="WhatsApp" variant="primary" size="sm" />
+          <WhatsAppCTA context="hero" label="Entrar em Contato" variant="primary" size="sm" />
         </div>
 
         {/* Mobile: Sheet */}
@@ -122,7 +136,7 @@ export function Header() {
             <div className="mt-8 pt-6 border-t border-white/15">
               <WhatsAppCTA
                 context="hero"
-                label="Falar no WhatsApp"
+                label="Entrar em Contato"
                 variant="secondary"
                 size="md"
                 className="w-full justify-center bg-brand-green hover:bg-brand-green-dark text-white font-bold"
@@ -130,7 +144,7 @@ export function Header() {
             </div>
           </SheetContent>
         </Sheet>
-      </div>
+      </motion.div>
     </header>
   );
 }

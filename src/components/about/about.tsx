@@ -2,27 +2,72 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { company } from "@/data/company";
-import { SectionWrapper, SectionLabel } from "@/components/shared/section-wrapper";
+import { Zap, Shield, Users, Star, Globe, Award } from "lucide-react";
+import { SectionWrapper } from "@/components/shared/section-wrapper";
 import { defaultViewport } from "@/lib/motion";
 
 /**
  * About — Only in BR
- * Seção de posicionamento da marca no tema claro.
+ * Layout limpo: headline + parágrafo + cards de pilares.
  */
 
-const wordVariants = {
-  hidden: { opacity: 0, y: 16 },
+const pillars = [
+  {
+    icon: Zap,
+    title: "Energia & Conexão",
+    desc: "Eventos que criam experiências reais e marcam memórias.",
+    color: "text-brand-yellow",
+    bg: "bg-brand-yellow/10",
+  },
+  {
+    icon: Shield,
+    title: "Documentação Completa",
+    desc: "ART, alvará, laudos e toda a burocracia resolvida.",
+    color: "text-emerald-400",
+    bg: "bg-emerald-400/10",
+  },
+  {
+    icon: Users,
+    title: "Equipe Especializada",
+    desc: "Operação técnica de ponta a ponta, do briefing à desmontagem.",
+    color: "text-blue-400",
+    bg: "bg-blue-400/10",
+  },
+  {
+    icon: Star,
+    title: "Marca Autoral",
+    desc: "Identidade própria, marca brasileira com cultura e positividade.",
+    color: "text-brand-yellow",
+    bg: "bg-brand-yellow/10",
+  },
+  {
+    icon: Globe,
+    title: "São Paulo e Região",
+    desc: "Atendemos corporativos, igrejas, prefeituras e agências.",
+    color: "text-emerald-400",
+    bg: "bg-emerald-400/10",
+  },
+  {
+    icon: Award,
+    title: "Execução Total",
+    desc: "Estrutura, audiovisual, alimentação e operação completa.",
+    color: "text-blue-400",
+    bg: "bg-blue-400/10",
+  },
+];
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, delay: i * 0.05, ease: "easeOut" as const },
+    transition: { duration: 0.45, delay: i * 0.07, ease: "easeOut" as const },
   }),
 };
 
 export function About() {
-  const valuesRef = useRef(null);
-  const isValuesInView = useInView(valuesRef, defaultViewport);
+  const gridRef = useRef(null);
+  const isGridInView = useInView(gridRef, defaultViewport);
 
   return (
     <SectionWrapper
@@ -31,95 +76,86 @@ export function About() {
       animate={false}
     >
       <div className="container-site relative z-10">
-        {/* Label */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={defaultViewport}
-          transition={{ duration: 0.6 }}
-          className="mb-12"
-        >
-          <SectionLabel>Sobre a Only in BR</SectionLabel>
-        </motion.div>
 
-        {/* Layout assimétrico */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+        {/* Topo: headline + parágrafo lado a lado */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-end mb-16">
 
-          {/* Coluna esquerda — texto manifesto */}
-          <div>
-            <motion.h2
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={defaultViewport}
-              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold leading-[1.12] tracking-tight text-white mb-8"
-            >
-              Não queremos ser
-              <br />
-              mais uma produtora.
-              <br />
-              <span className="text-brand-yellow">Queremos ser</span>
-              <br />
-              referência nacional.
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={defaultViewport}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-neutral-200 text-base sm:text-lg leading-relaxed mb-6 font-normal"
-            >
-              {company.description}
-            </motion.p>
-
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={defaultViewport}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-neutral-300 text-sm sm:text-base leading-relaxed font-normal"
-            >
-              {company.mission}
-            </motion.p>
-          </div>
-
-          {/* Coluna direita — valores em escala */}
-          <div ref={valuesRef} className="lg:pt-4">
-            <div
-              aria-label="Valores da Only in BR"
-              className="flex flex-wrap gap-2.5 sm:gap-3"
-            >
-              {company.values.map((value, i) => (
-                <motion.span
-                  key={value}
-                  custom={i}
-                  variants={wordVariants}
-                  initial="hidden"
-                  animate={isValuesInView ? "visible" : "hidden"}
-                  className="inline-block px-4 py-2 rounded-2xl liquid-glass font-heading font-bold text-white/80 hover:text-brand-yellow hover:border-brand-yellow/50 transition-all duration-300 cursor-default select-none text-sm sm:text-base shadow-sm"
+          {/* Headline */}
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={defaultViewport}
+            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            <p className="text-brand-yellow font-heading text-xs font-bold tracking-[0.2em] uppercase mb-4 opacity-80">
+              Quem somos
+            </p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold leading-[1.25] tracking-tight text-white">
+              Cada evento, uma{" "}
+              <span
+                className="relative inline-block text-brand-yellow"
+                style={{ fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px currentColor" }}
+              >
+                história
+                <motion.svg
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={defaultViewport}
+                  transition={{ duration: 1.1, delay: 0.5, ease: "easeOut" }}
+                  aria-hidden="true"
+                  className="absolute left-0 -bottom-1 sm:-bottom-2 w-full h-2 sm:h-3 text-brand-yellow fill-none stroke-current stroke-[5]"
+                  viewBox="0 0 100 12"
+                  preserveAspectRatio="none"
                 >
-                  {value}
-                </motion.span>
-              ))}
-            </div>
+                  <path d="M0,7 Q50,0 100,7" strokeLinecap="round" />
+                </motion.svg>
+              </span>
+              {" "}que o Brasil vai lembrar.
+            </h2>
+          </motion.div>
 
-            {/* Frase de impacto */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={defaultViewport}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="mt-10 p-7 rounded-3xl liquid-glass-opaque border border-white/20 border-l-4 border-l-brand-yellow shadow-2xl"
-            >
-              <p className="text-xl sm:text-2xl font-heading font-bold text-white leading-snug">
-                "A energia que conecta pessoas."
-              </p>
-              <p className="text-xs text-brand-yellow font-bold mt-2 tracking-widest uppercase">
-                — Only in BR • Marca Autoral
-              </p>
-            </motion.div>
-          </div>
+          {/* Parágrafo curto e direto */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={defaultViewport}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="text-neutral-300 text-base sm:text-lg leading-relaxed font-normal lg:pb-1"
+          >
+            Somos a <span className="text-white font-semibold">Only in BR</span> — marca autoral de entretenimento e produção executiva de eventos em São Paulo. Estrutura, equipe, documentação e operação completa para eventos corporativos, comunitários e públicos.
+          </motion.p>
+        </div>
+
+        {/* Grid de pilares */}
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
+          {pillars.map((pillar, i) => {
+            const Icon = pillar.icon;
+            return (
+              <motion.div
+                key={pillar.title}
+                custom={i}
+                variants={cardVariants}
+                initial="hidden"
+                animate={isGridInView ? "visible" : "hidden"}
+                className="group flex items-start gap-4 p-5 rounded-2xl liquid-glass border border-white/10 hover:border-white/25 transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <div className={`w-10 h-10 rounded-xl ${pillar.bg} ${pillar.color} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-white font-heading font-bold text-sm sm:text-base leading-tight mb-1">
+                    {pillar.title}
+                  </p>
+                  <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
+                    {pillar.desc}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </SectionWrapper>

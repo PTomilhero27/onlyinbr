@@ -13,12 +13,9 @@ import {
   Megaphone,
   Check,
   ArrowRight,
-  ShieldCheck,
-  Sparkles,
 } from "lucide-react";
-import { featuredServices, generalServices, allServices, type ServiceItem } from "@/data/services";
+import { allServices, type ServiceItem } from "@/data/services";
 import { WhatsAppCTA } from "@/components/shared/whatsapp-cta";
-import { SectionLabel } from "@/components/shared/section-wrapper";
 import { defaultViewport } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -33,21 +30,12 @@ const iconMap: Record<string, React.ElementType> = {
   Megaphone,
 };
 
-type FilterCategory = "todos" | "destaques" | "estrutura" | "gestao";
-
 export function Services() {
-  const [activeFilter, setActiveFilter] = useState<FilterCategory>("todos");
+  const [active, setActive] = useState<string>(allServices[0].id);
 
-  const filteredServices = allServices.filter((service) => {
-    if (activeFilter === "destaques") return service.category === "destaque";
-    if (activeFilter === "estrutura")
-      return ["estrutura-locacao", "alvara-documentacao", "equipe-alimentacao"].includes(service.id);
-    if (activeFilter === "gestao")
-      return ["corporativo", "igrejas", "producao-executiva", "design-eventos", "marketing-influencia"].includes(
-        service.id
-      );
-    return true;
-  });
+  const activeService = allServices.find((s) => s.id === active)!;
+  const Icon = iconMap[activeService.iconName ?? "CalendarDays"] ?? CalendarDays;
+  const isFeatured = activeService.category === "destaque";
 
   return (
     <section
@@ -56,334 +44,199 @@ export function Services() {
       aria-labelledby="services-main-title"
     >
       <div className="container-site relative z-10">
-        {/* Cabeçalho da Seção */}
-        <div className="max-w-3xl mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={defaultViewport}
-            transition={{ duration: 0.5 }}
-            className="mb-4"
-          >
-            <SectionLabel>Nossos Serviços & Soluções</SectionLabel>
-          </motion.div>
 
-          <motion.h2
-            id="services-main-title"
+        {/* ── CABEÇALHO ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-end mb-16">
+          <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={defaultViewport}
-            transition={{ duration: 0.8 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold leading-[1.12] tracking-tight text-white mb-5"
+            transition={{ duration: 0.7 }}
           >
-            Produção completa de eventos —{" "}
-            <span className="text-brand-yellow">estrutura, documentação, equipe e operação.</span>
-          </motion.h2>
+            <p className="text-brand-yellow font-heading text-xs font-bold tracking-[0.2em] uppercase mb-4 opacity-80">
+              Nossos Serviços
+            </p>
+            <h2
+              id="services-main-title"
+              className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold leading-[1.15] tracking-tight text-white"
+            >
+              O que a{" "}
+              <span
+                className="relative inline-block"
+                style={{ color: "#3b82f6", fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px #3b82f6" }}
+              >
+                Only in BR
+                <motion.svg
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={defaultViewport}
+                  transition={{ duration: 1.1, delay: 0.5, ease: "easeOut" }}
+                  aria-hidden="true"
+                  className="absolute left-0 -bottom-1 sm:-bottom-2 w-full h-2 sm:h-3 fill-none stroke-current stroke-[5]"
+                  style={{ color: "#3b82f6" }}
+                  viewBox="0 0 100 12"
+                  preserveAspectRatio="none"
+                >
+                  <path d="M0,7 Q50,0 100,7" strokeLinecap="round" />
+                </motion.svg>
+              </span>
+              {" "}entrega.
+            </h2>
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={defaultViewport}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-neutral-200 text-base sm:text-lg leading-relaxed font-normal"
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="text-neutral-300 text-base sm:text-lg leading-relaxed font-normal lg:pb-1"
           >
-            Atuamos em São Paulo e região com soluções de ponta a ponta. Cuidamos do alvará, laudos técnicos com ART no CREA/SP,
-            montagem de palcos, tendas, som, iluminação, escala de equipe e divulgação.
+            De eventos corporativos a festas de igreja — cobrimos estrutura,
+            documentação com ART, equipe e operação de ponta a ponta em São Paulo e região.
           </motion.p>
         </div>
 
-        {/* ── SEÇÃO DE DESTAQUES (Cards Principais) ── */}
-        <div className="mb-16">
-          <div className="flex items-center gap-2 mb-6">
-            <Sparkles className="w-4 h-4 text-brand-yellow" />
-            <h3 className="text-xs font-bold uppercase tracking-widest text-brand-yellow">
-              Especialidades em Destaque
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {featuredServices.map((service, index) => {
-              const Icon = iconMap[service.iconName ?? "Briefcase"] ?? Briefcase;
-              const isFirst = index === 0;
-
+        {/* ── PAINEL INTERATIVO ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={defaultViewport}
+          transition={{ duration: 0.8 }}
+          className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-3 lg:gap-5 items-start"
+        >
+          {/* ── LISTA (esquerda) ── */}
+          <div className="liquid-glass-opaque rounded-2xl border border-white/10 p-1.5 flex flex-col h-full">
+            {allServices.map((service) => {
+              const SIcon = iconMap[service.iconName ?? "CalendarDays"] ?? CalendarDays;
+              const isActive = active === service.id;
               return (
-                <motion.div
+                <button
                   key={service.id}
-                  initial={{ opacity: 0, y: 28 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={defaultViewport}
-                  transition={{ duration: 0.7, delay: index * 0.15 }}
+                  onClick={() => setActive(service.id)}
+                  aria-pressed={isActive}
                   className={cn(
-                    "relative rounded-3xl p-7 sm:p-9 transition-all duration-300 liquid-glass-opaque shadow-2xl flex flex-col justify-between border",
-                    isFirst
-                      ? "border-brand-yellow/30 hover:border-brand-yellow"
-                      : "border-emerald-400/30 hover:border-emerald-400"
+                    "group flex items-center gap-3 px-3 py-1 rounded-xl text-left transition-all duration-200 cursor-pointer w-full",
+                    isActive
+                      ? "bg-brand-yellow/10 border border-brand-yellow/25"
+                      : "border border-transparent hover:bg-white/[0.04] hover:border-white/10"
                   )}
                 >
-                  {/* Badge & Número */}
-                  <div>
-                    <div className="flex items-center justify-between gap-4 mb-6">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={cn(
-                            "w-12 h-12 rounded-2xl flex items-center justify-center shadow-md",
-                            isFirst ? "bg-brand-yellow text-neutral-950" : "bg-emerald-500 text-neutral-950"
-                          )}
-                        >
-                          <Icon className="w-6 h-6 font-bold" />
-                        </div>
-                        <div>
-                          <span
-                            className={cn(
-                              "text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider",
-                              isFirst
-                                ? "bg-brand-yellow/20 text-brand-yellow border border-brand-yellow/40"
-                                : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                            )}
-                          >
-                            {service.badge}
-                          </span>
-                        </div>
-                      </div>
-                      <span className="text-4xl font-heading font-bold text-white/20 select-none">
-                        {service.number}
-                      </span>
-                    </div>
+                  {/* Ícone */}
+                  <div className={cn(
+                    "w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 transition-all duration-200",
+                    isActive
+                      ? "bg-brand-yellow text-neutral-950"
+                      : "bg-white/[0.06] text-neutral-500 group-hover:bg-white/10 group-hover:text-neutral-300"
+                  )}>
+                    <SIcon className="w-3 h-3" />
+                  </div>
 
-                    <h4 className="text-2xl sm:text-3xl font-heading font-bold text-white mb-3">
+                  {/* Título + badge */}
+                  <div className="flex-1 min-w-0">
+                    <p className={cn(
+                      "text-xs font-heading font-bold leading-snug truncate transition-colors",
+                      isActive ? "text-white" : "text-neutral-400 group-hover:text-neutral-200"
+                    )}>
                       {service.title}
-                    </h4>
-
-                    <p className="text-neutral-200 text-sm sm:text-base mb-6 leading-relaxed font-normal">
-                      {service.headline}
                     </p>
-
-                    {/* Lista de itens inclusos */}
-                    <div className="liquid-glass rounded-2xl p-5 border border-white/15 mb-6">
-                      <p className="text-[11px] font-bold tracking-wider uppercase text-neutral-400 mb-3">
-                        Itens e Cobertura Inclusos:
-                      </p>
-                      <ul className="space-y-2.5">
-                        {service.items.map((item) => (
-                          <li key={item} className="flex items-start gap-2.5 text-xs sm:text-sm text-neutral-100">
-                            <div
-                              className={cn(
-                                "w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
-                                isFirst ? "bg-brand-yellow text-neutral-950" : "bg-emerald-400 text-neutral-950"
-                              )}
-                            >
-                              <Check className="w-3 h-3" />
-                            </div>
-                            <span className="font-medium">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Público atendido */}
-                    {service.audience && (
-                      <div className="flex flex-wrap items-center gap-1.5 mb-8">
-                        <span className="text-xs text-neutral-400 font-semibold mr-1">Atende:</span>
-                        {service.audience.map((aud) => (
-                          <span
-                            key={aud}
-                            className="text-xs font-semibold px-2.5 py-1 rounded-lg liquid-glass text-neutral-200 border border-white/15"
-                          >
-                            {aud}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <p className={cn(
+                      "text-[10px] transition-colors truncate",
+                      isActive ? "text-brand-yellow/70" : "text-neutral-600"
+                    )}>
+                      {service.badge ?? `Serviço ${service.number}`}
+                    </p>
                   </div>
 
-                  {/* CTA */}
-                  <div className="pt-4 border-t border-white/15 flex items-center justify-between">
-                    <WhatsAppCTA
-                      context={service.ctaContext}
-                      label={service.ctaLabel}
-                      variant="primary"
-                      size="md"
-                      className="w-full sm:w-auto bg-brand-yellow text-neutral-950 hover:bg-brand-yellow-dark shadow-xl font-bold"
-                    />
-                  </div>
-                </motion.div>
+                  <ArrowRight className={cn(
+                    "w-3 h-3 flex-shrink-0 transition-all duration-200",
+                    isActive ? "text-brand-yellow" : "opacity-0 group-hover:opacity-40 text-neutral-400"
+                  )} />
+                </button>
               );
             })}
           </div>
-        </div>
 
-        {/* ── SEÇÃO DE SERVIÇOS GERAIS (Grade Completa) ── */}
-        <div className="pt-6">
-          {/* Barra de Filtros */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-brand-yellow" />
-              <h3 className="text-xs font-bold uppercase tracking-widest text-brand-yellow">
-                Grade Geral de Serviços Técnicos
-              </h3>
-            </div>
+          {/* ── PAINEL DE DETALHES (direita) ── */}
+          <div className="relative h-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="liquid-glass-opaque rounded-2xl border border-white/10 p-4 sm:p-6 shadow-2xl"
+              >
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/10">
+                  <div className={cn(
+                    "w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0",
+                    isFeatured ? "bg-brand-yellow text-neutral-950" : "bg-emerald-500/20 text-emerald-400"
+                  )}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    {activeService.badge && (
+                      <span className={cn(
+                        "inline-block text-[10px] font-bold uppercase tracking-widest mb-1",
+                        isFeatured ? "text-brand-yellow" : "text-emerald-400"
+                      )}>
+                        {activeService.badge}
+                      </span>
+                    )}
+                    <h3 className="text-lg sm:text-xl font-heading font-bold text-white leading-tight">
+                      {activeService.title}
+                    </h3>
+                  </div>
+                </div>
 
-            <div className="flex flex-wrap gap-1.5 p-1 liquid-glass-opaque rounded-2xl border border-white/15">
-              <button
-                onClick={() => setActiveFilter("todos")}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
-                  activeFilter === "todos"
-                    ? "bg-brand-yellow text-neutral-950 shadow-md"
-                    : "text-neutral-300 hover:text-white"
-                )}
-              >
-                Todos (8)
-              </button>
-              <button
-                onClick={() => setActiveFilter("destaques")}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
-                  activeFilter === "destaques"
-                    ? "bg-brand-yellow text-neutral-950 shadow-md"
-                    : "text-neutral-300 hover:text-white"
-                )}
-              >
-                Destaques
-              </button>
-              <button
-                onClick={() => setActiveFilter("estrutura")}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
-                  activeFilter === "estrutura"
-                    ? "bg-brand-yellow text-neutral-950 shadow-md"
-                    : "text-neutral-300 hover:text-white"
-                )}
-              >
-                Estrutura & Legal
-              </button>
-              <button
-                onClick={() => setActiveFilter("gestao")}
-                className={cn(
-                  "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer",
-                  activeFilter === "gestao"
-                    ? "bg-brand-yellow text-neutral-950 shadow-md"
-                    : "text-neutral-300 hover:text-white"
-                )}
-              >
-                Produção & Mídia
-              </button>
-            </div>
-          </div>
+                {/* Descrição */}
+                <p className="text-neutral-300 text-sm leading-relaxed mb-3">
+                  {activeService.description}
+                </p>
 
-          {/* Cards em Grid */}
-          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AnimatePresence>
-              {filteredServices.map((service, index) => {
-                const Icon = iconMap[service.iconName ?? "CalendarDays"] ?? CalendarDays;
-
-                return (
-                  <motion.div
-                    layout
-                    key={service.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}
-                    className="liquid-glass-opaque rounded-3xl p-6 sm:p-7 border border-white/18 shadow-xl hover:border-brand-yellow/50 transition-all duration-300 flex flex-col justify-between group"
-                  >
-                    <div>
-                      {/* Top Header do Card */}
-                      <div className="flex items-center justify-between mb-5">
-                        <div className="w-10 h-10 rounded-xl bg-white/10 group-hover:bg-brand-yellow text-white group-hover:text-neutral-950 flex items-center justify-center transition-colors shadow-sm">
-                          <Icon className="w-5 h-5" />
-                        </div>
-                        <span className="text-xs font-bold text-neutral-400 font-mono">
-                          {service.number}
-                        </span>
+                {/* Itens em 2 colunas */}
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 mb-3">
+                  {activeService.items.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm text-neutral-200">
+                      <div className={cn(
+                        "w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5",
+                        isFeatured ? "bg-brand-yellow/20 text-brand-yellow" : "bg-emerald-500/20 text-emerald-400"
+                      )}>
+                        <Check className="w-2.5 h-2.5" />
                       </div>
+                      <span className="leading-snug">{item}</span>
+                    </li>
+                  ))}
+                </ul>
 
-                      <div className="mb-2">
-                        {service.badge && (
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md liquid-glass text-brand-yellow border border-brand-yellow/30">
-                            {service.badge}
-                          </span>
-                        )}
-                      </div>
+                {/* Público atendido */}
+                {activeService.audience && (
+                  <div className="flex flex-wrap gap-1.5 mb-3 pt-3 border-t border-white/10">
+                    <span className="text-xs text-neutral-500 font-semibold self-center mr-1">Atende:</span>
+                    {activeService.audience.map((aud) => (
+                      <span key={aud} className="text-xs font-medium px-3 py-1 rounded-lg liquid-glass text-neutral-300 border border-white/15">
+                        {aud}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
-                      <h4 className="text-lg sm:text-xl font-heading font-bold text-white mb-2 leading-snug">
-                        {service.title}
-                      </h4>
-
-                      <p className="text-xs sm:text-sm text-neutral-300 mb-5 leading-relaxed font-normal">
-                        {service.headline}
-                      </p>
-
-                      {/* Lista de itens compacta */}
-                      <div className="pt-4 border-t border-white/10 mb-6">
-                        <ul className="space-y-2">
-                          {service.items.slice(0, 4).map((item) => (
-                            <li key={item} className="flex items-start gap-2 text-xs text-neutral-200">
-                              <span className="w-1.5 h-1.5 rounded-full bg-brand-yellow flex-shrink-0 mt-1.5" />
-                              <span className="font-normal leading-snug">{item}</span>
-                            </li>
-                          ))}
-                          {service.items.length > 4 && (
-                            <li className="text-[11px] font-semibold text-brand-yellow pt-1">
-                              + {service.items.length - 4} outros serviços inclusos
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Botão de WhatsApp */}
-                    <div className="pt-4 border-t border-white/10">
-                      <WhatsAppCTA
-                        context={service.ctaContext}
-                        label={service.ctaLabel}
-                        variant="outline"
-                        size="sm"
-                        className="w-full justify-between liquid-glass text-white border-white/20 hover:bg-brand-yellow hover:text-neutral-950 hover:border-brand-yellow transition-all font-semibold"
-                      />
-                    </div>
-                  </motion.div>
-                );
-              })}
+                {/* CTA */}
+                <div className="pt-3 border-t border-white/10">
+                  <WhatsAppCTA
+                    context={activeService.ctaContext}
+                    label={activeService.ctaLabel}
+                    variant="primary"
+                    size="md"
+                    className="bg-brand-yellow text-neutral-950 hover:bg-brand-yellow-dark font-bold shadow-lg"
+                  />
+                </div>
+              </motion.div>
             </AnimatePresence>
-          </motion.div>
-        </div>
-
-        {/* Banner de Consulta e Responsabilidade Técnica */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={defaultViewport}
-          transition={{ duration: 0.7 }}
-          className="mt-16 p-8 sm:p-10 rounded-3xl liquid-glass-opaque border border-white/20 text-white relative overflow-hidden shadow-2xl"
-        >
-          <div
-            aria-hidden="true"
-            className="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-brand-yellow/20 blur-2xl pointer-events-none"
-          />
-
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="max-w-2xl">
-              <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-brand-yellow text-xs font-bold uppercase tracking-wider mb-3 border border-brand-yellow/30">
-                CNPJ 65.112.374/0001-44 • São Paulo, SP
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-heading font-bold text-white mb-2">
-                Precisa de uma proposta técnica ou regularização de alvará?
-              </h3>
-              <p className="text-neutral-200 text-sm sm:text-base font-normal">
-                Emitimos Nota Fiscal, contrato de prestação de serviços e laudos técnicos com ART no CREA/SP.
-              </p>
-            </div>
-
-            <WhatsAppCTA
-              context="contact"
-              label="Solicitar Proposta Agora"
-              variant="primary"
-              size="lg"
-              className="flex-shrink-0 bg-brand-yellow text-neutral-950 hover:bg-brand-yellow-dark shadow-2xl font-bold"
-            />
           </div>
         </motion.div>
+
       </div>
     </section>
   );

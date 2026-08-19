@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
-import { ArrowDown, Sparkles, ShieldCheck, Zap, Award } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { WhatsAppCTA } from "@/components/shared/whatsapp-cta";
 
 const easePaint = [0.22, 1, 0.36, 1] as [number, number, number, number];
@@ -24,7 +24,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden pt-36 pb-16 sm:pt-40 sm:pb-24"
+      className="relative h-screen flex flex-col justify-center overflow-hidden pt-36 pb-16 sm:pt-40 sm:pb-24"
       aria-label="Hero — A energia que conecta pessoas"
     >
       {/* ── 1. PINCELADAS DE LUZ FLUIDAS (TOTALMENTE SUAVES, SEM CORTES) ── */}
@@ -100,14 +100,17 @@ export function Hero() {
             className="text-[1.85rem] sm:text-4xl md:text-5xl lg:text-[3.25rem] font-heading font-bold leading-[1.08] tracking-tight text-white mb-2.5 sm:mb-3.5 drop-shadow-md text-left"
           >
             A energia que{" "}
-            <span className="relative inline-block text-brand-yellow">
+            <span
+              className="relative inline-block text-brand-green-light"
+              style={{ fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px currentColor" }}
+            >
               conecta
               <motion.svg
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ duration: 1.1, delay: 0.6, ease: "easeOut" }}
                 aria-hidden="true"
-                className="absolute left-0 -bottom-1 sm:-bottom-2 w-full h-2 sm:h-3 text-brand-yellow fill-none stroke-current stroke-[5]"
+                className="absolute left-0 -bottom-1 sm:-bottom-2 w-full h-2 sm:h-3 text-brand-green-light fill-none stroke-current stroke-[5]"
                 viewBox="0 0 100 12"
                 preserveAspectRatio="none"
               >
@@ -134,55 +137,22 @@ export function Hero() {
           >
             <WhatsAppCTA
               context="hero"
-              label="WhatsApp Oficial"
+              label="WhatsApp"
               variant="secondary"
               size="sm"
-              className="bg-brand-green hover:bg-brand-green-dark text-white shadow-xl shadow-brand-green/30 font-bold hover:scale-[1.02] transition-all h-11 sm:h-12 px-4 sm:px-6 border border-emerald-400/30 justify-center items-center text-center text-xs sm:text-base whitespace-nowrap flex-1 sm:flex-initial"
+              className="bg-brand-green hover:bg-brand-green-dark text-white shadow-xl shadow-brand-green/30 font-black hover:scale-[1.02] transition-all h-12 sm:h-14 px-5 sm:px-7 border border-emerald-400/30 justify-center items-center text-center text-sm sm:text-lg whitespace-nowrap flex-1 sm:flex-initial tracking-wide"
             />
             <Link
               href="#servicos"
-              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-base font-bold text-white hover:text-brand-yellow liquid-glass hover:bg-white/20 rounded-full h-11 sm:h-12 px-4 sm:px-6 transition-all duration-200 shadow-sm text-center whitespace-nowrap flex-1 sm:flex-initial"
+              style={{ fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px currentColor" }}
+              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-lg font-bold text-white hover:text-brand-yellow liquid-glass hover:bg-white/20 rounded-full h-12 sm:h-14 px-5 sm:px-7 transition-all duration-200 shadow-sm text-center whitespace-nowrap flex-1 sm:flex-initial tracking-wide"
               aria-label="Ver serviços da Only in BR"
             >
               Ver Serviços
             </Link>
           </motion.div>
 
-          {/* Mini-Cards Compactos em Linha */}
-          <motion.div
-            variants={textVariants}
-            className="grid grid-cols-3 gap-1.5 sm:gap-2.5 pt-3 sm:pt-4 border-t border-white/15 max-w-xl w-full"
-          >
-            <div className="flex items-center gap-1.5 sm:gap-2.5 p-1.5 sm:p-2 rounded-xl liquid-glass border border-white/20">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-brand-yellow/20 text-brand-yellow flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              </div>
-              <div className="min-w-0 text-left">
-                <p className="text-[10px] sm:text-xs font-bold text-white leading-tight truncate">100% Autoral</p>
-                <p className="text-[8px] sm:text-[10px] text-neutral-300 truncate">Identidade BR</p>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-1.5 sm:gap-2.5 p-1.5 sm:p-2 rounded-xl liquid-glass border border-white/20">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-400/20 text-emerald-300 flex items-center justify-center flex-shrink-0">
-                <ShieldCheck className="w-3.5 h-3.5" />
-              </div>
-              <div className="min-w-0 text-left">
-                <p className="text-[10px] sm:text-xs font-bold text-white leading-tight truncate">ART & Alvará</p>
-                <p className="text-[8px] sm:text-[10px] text-neutral-300 truncate">CREA/SP</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 sm:gap-2.5 p-1.5 sm:p-2 rounded-xl liquid-glass border border-white/20">
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-blue-400/20 text-blue-300 flex items-center justify-center flex-shrink-0">
-                <Zap className="w-3.5 h-3.5" />
-              </div>
-              <div className="min-w-0 text-left">
-                <p className="text-[10px] sm:text-xs font-bold text-white leading-tight truncate">Operação 360°</p>
-                <p className="text-[8px] sm:text-[10px] text-neutral-300 truncate">Execução</p>
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
       </div>
 
