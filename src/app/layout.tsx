@@ -47,15 +47,18 @@ const brasilero = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://onlyinbr.com.br"),
-  title: "Only in BR — A energia que conecta pessoas.",
+  title: "Only in BR — Produção de Eventos, Estrutura & Gestão de Staff",
   description:
-    "Only in BR é uma marca autoral de entretenimento e produção de eventos. Licitações, produção completa e alimentação para eventos de todos os portes.",
+    "Produção executiva de eventos em São Paulo e região. Palcos 360°, box truss, som Line Array, painéis de LED, alimentação e gestão de staff, laudos com ART no CREA/SP e alvará.",
   keywords: [
     "produção de eventos",
-    "licitações para eventos",
-    "marmitas para eventos",
-    "eventos corporativos",
-    "eventos públicos",
+    "eventos corporativos sp",
+    "festas de igrejas quermesses",
+    "locação de palco e som",
+    "painel de led eventos",
+    "alvará evento temporário sp",
+    "laudo art crea sp",
+    "equipe de staff para eventos",
     "Only in BR",
   ],
   icons: {
@@ -72,24 +75,15 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: "https://onlyinbr.com.br",
     siteName: "Only in BR",
-    title: "Only in BR — A energia que conecta pessoas.",
+    title: "Only in BR — Produção de Eventos, Estrutura & Gestão de Staff",
     description:
-      "Only in BR é uma marca autoral de entretenimento e produção de eventos. Licitações, produção completa e alimentação para eventos de todos os portes.",
-    images: [
-      {
-        url: "/logos/PNG/Logo Only in BR COMPLETO PNG 1.png",
-        width: 800,
-        height: 800,
-        alt: "Only in BR — A energia que conecta pessoas.",
-      },
-    ],
+      "Produção executiva de eventos em São Paulo e região. Palcos 360°, box truss, som Line Array, painéis de LED, equipe de staff e laudos com ART no CREA/SP.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Only in BR — A energia que conecta pessoas.",
+    title: "Only in BR — Produção de Eventos, Estrutura & Gestão de Staff",
     description:
-      "Only in BR é uma marca autoral de entretenimento e produção de eventos.",
-    images: ["/logos/PNG/Logo Only in BR COMPLETO PNG 1.png"],
+      "Produção executiva de eventos em São Paulo e região. Estrutura, tecnologia e operação especializada.",
   },
   robots: {
     index: true,
