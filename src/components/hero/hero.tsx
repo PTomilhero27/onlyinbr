@@ -39,7 +39,7 @@ export function Hero() {
       </div>
 
       {/* ── 2. LOGO FLUTUANTE (NO MOBILE: DIREITA E INCLINADA PARA O OUTRO LADO; NO DESKTOP: ESQUERDA) ── */}
-      <div className="absolute right-[-8%] sm:right-auto sm:left-[-6%] md:left-[-3%] lg:left-[0%] top-[4%] sm:top-[-10%] md:top-[-8%] lg:top-[-6%] pointer-events-none select-none z-[1]">
+      <div className="absolute right-[-4%] sm:right-auto sm:left-[2%] md:left-[3%] lg:left-[5%] top-[10%] sm:top-[2%] md:top-[4%] lg:top-[6%] pointer-events-none select-none z-[1]">
         <motion.div
           initial={{
             opacity: 0,
@@ -56,7 +56,7 @@ export function Hero() {
             delay: 0.15,
             ease: easePaint,
           }}
-          className="relative w-[240px] sm:w-[480px] md:w-[580px] lg:w-[680px] xl:w-[760px] aspect-square flex items-center justify-center opacity-30 sm:opacity-94"
+          className="relative w-[190px] sm:w-[340px] md:w-[420px] lg:w-[480px] xl:w-[540px] aspect-square flex items-center justify-center opacity-30 sm:opacity-95"
         >
           {/* Halo de luz colorida atrás da logo */}
           <div className="absolute inset-4 rounded-full bg-gradient-to-tr from-brand-yellow/30 via-emerald-400/20 to-blue-500/20 blur-3xl animate-pulse" />
@@ -79,7 +79,7 @@ export function Hero() {
               fill
               priority
               className="object-contain drop-shadow-[0_25px_60px_rgba(0,0,0,0.65)]"
-              sizes="(max-width: 768px) 50vw, 55vw"
+              sizes="(max-width: 768px) 45vw, 45vw"
             />
           </motion.div>
         </motion.div>
@@ -97,20 +97,21 @@ export function Hero() {
           {/* Headline */}
           <motion.h1
             variants={textVariants}
-            className="text-[1.85rem] sm:text-4xl md:text-5xl lg:text-[3.25rem] font-heading font-bold leading-[1.08] tracking-tight text-white mb-2.5 sm:mb-3.5 drop-shadow-md text-left"
+            className="text-[1.85rem] sm:text-4xl md:text-5xl lg:text-[3.15rem] font-heading font-bold leading-[1.12] tracking-tight text-white mb-3 sm:mb-4 drop-shadow-md text-left"
           >
-            A energia que{" "}
+            O que a{" "}
             <span
-              className="relative inline-block text-brand-green-light"
-              style={{ fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px currentColor" }}
+              className="relative inline-block"
+              style={{ color: "#38bdf8", fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px #38bdf8" }}
             >
-              conecta
+              Only in BR
               <motion.svg
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
                 transition={{ duration: 1.1, delay: 0.6, ease: "easeOut" }}
                 aria-hidden="true"
-                className="absolute left-0 -bottom-1 sm:-bottom-2 w-full h-2 sm:h-3 text-brand-green-light fill-none stroke-current stroke-[5]"
+                className="absolute left-0 -bottom-1 sm:-bottom-2 w-full h-2 sm:h-3 fill-none stroke-current stroke-[5]"
+                style={{ color: "#38bdf8" }}
                 viewBox="0 0 100 12"
                 preserveAspectRatio="none"
               >
@@ -118,16 +119,16 @@ export function Hero() {
               </motion.svg>
             </span>
             <br />
-            pessoas.
+            entrega para você.
           </motion.h1>
 
-          {/* Subtítulo */}
+          {/* Subtítulo direto e chamativo */}
           <motion.p
             variants={textVariants}
-            className="text-xs sm:text-base md:text-lg text-neutral-200 leading-relaxed mb-4 sm:mb-6 max-w-xl font-normal drop-shadow-xs text-left"
+            className="text-sm sm:text-base md:text-lg text-neutral-200 leading-relaxed mb-5 sm:mb-7 max-w-xl font-normal drop-shadow-xs text-left"
           >
-            Marca autoral de entretenimento e produção executiva de grandes eventos.
-            Estrutura, documentação com ART, equipe especializada e operação completa em São Paulo e região.
+            <b>Produção de eventos em São Paulo e região.</b> Estrutura, tecnologia e operação especializada para transformar projetos em experiências completas, seguras e memoráveis.
+
           </motion.p>
 
           {/* CTAs de Conversão — Altura idêntica e sem quebras estranhas */}
@@ -139,13 +140,12 @@ export function Hero() {
               context="hero"
               label="WhatsApp"
               variant="secondary"
-              size="sm"
-              className="bg-brand-green hover:bg-brand-green-dark text-white shadow-xl shadow-brand-green/30 font-black hover:scale-[1.02] transition-all h-12 sm:h-14 px-5 sm:px-7 border border-emerald-400/30 justify-center items-center text-center text-sm sm:text-lg whitespace-nowrap flex-1 sm:flex-initial tracking-wide"
+              size="md"
+              className="bg-brand-green hover:bg-brand-green-dark text-white shadow-xl shadow-brand-green/30 font-bold hover:scale-[1.02] transition-all h-12 sm:h-14 px-5 sm:px-7 border border-emerald-400/30 justify-center items-center text-center text-sm sm:text-base whitespace-nowrap flex-1 sm:flex-initial"
             />
             <Link
               href="#servicos"
-              style={{ fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px currentColor" }}
-              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-lg font-bold text-white hover:text-brand-yellow liquid-glass hover:bg-white/20 rounded-full h-12 sm:h-14 px-5 sm:px-7 transition-all duration-200 shadow-sm text-center whitespace-nowrap flex-1 sm:flex-initial tracking-wide"
+              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base font-bold text-neutral-950 bg-brand-yellow hover:bg-brand-yellow-dark rounded-full h-12 sm:h-14 px-5 sm:px-7 transition-all duration-200 shadow-xl shadow-brand-yellow/20 text-center whitespace-nowrap flex-1 sm:flex-initial"
               aria-label="Ver serviços da Only in BR"
             >
               Ver Serviços

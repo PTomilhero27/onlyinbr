@@ -17,7 +17,7 @@ export default function Home() {
       <Header />
       <main id="main-content">
         <Hero />
-        <About />
+        {/* <About /> */}
         <Services />
         <Portfolio />
         <Faq />

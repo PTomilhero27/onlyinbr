@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react";
 import { getWhatsAppUrl, type WhatsAppContext } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "secondary" | "outline" | "ghost";
+type Variant = "primary" | "secondary" | "blue" | "outline" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 interface WhatsAppCTAProps {
@@ -17,19 +17,21 @@ interface WhatsAppCTAProps {
 
 const variantStyles: Record<Variant, string> = {
   primary:
-    "bg-brand-yellow text-neutral-950 hover:bg-brand-yellow-dark font-bold shadow-sm hover:shadow-md font-heading",
+    "bg-brand-yellow text-neutral-950 hover:bg-brand-yellow-dark font-bold shadow-sm hover:shadow-md",
   secondary:
-    "bg-brand-green text-white hover:bg-brand-green-dark font-bold shadow-sm hover:shadow-md font-heading",
+    "bg-brand-green text-white hover:bg-brand-green-dark font-bold shadow-sm hover:shadow-md",
+  blue:
+    "bg-sky-500 text-neutral-950 hover:bg-sky-400 font-bold shadow-sm hover:shadow-md",
   outline:
-    "border-2 border-brand-green text-brand-green hover:bg-brand-green hover:text-white font-bold font-heading",
+    "border-2 border-brand-green text-brand-green hover:bg-brand-green hover:text-white font-bold",
   ghost:
-    "text-brand-green hover:text-brand-green-dark underline-offset-4 hover:underline font-semibold font-heading",
+    "text-brand-green hover:text-brand-green-dark underline-offset-4 hover:underline font-semibold",
 };
 
 const sizeStyles: Record<Size, string> = {
-  sm: "text-sm sm:text-base px-5 py-2.5 gap-1.5",
-  md: "text-base sm:text-lg px-6 py-3 gap-2",
-  lg: "text-lg sm:text-xl px-8 py-3.5 gap-2.5",
+  sm: "text-sm px-4 sm:px-5 py-2 sm:py-2.5 gap-1.5",
+  md: "text-sm sm:text-base px-5 sm:px-6 py-2.5 sm:py-3 gap-2",
+  lg: "text-base sm:text-lg px-7 sm:px-8 py-3 sm:py-3.5 gap-2.5",
 };
 
 /**
@@ -56,7 +58,7 @@ export function WhatsAppCTA({
       rel="noopener noreferrer"
       aria-label={`${label} — abre o WhatsApp`}
       className={cn(
-        "inline-flex items-center justify-center rounded-full",
+        "inline-flex items-center justify-center rounded-full font-sans font-bold",
         "transition-all duration-200 ease-out",
         "focus-visible:outline-2 focus-visible:outline-brand-yellow focus-visible:outline-offset-3",
         variantStyles[variant],
@@ -75,7 +77,7 @@ export function WhatsAppCTA({
           )}
         />
       )}
-      <span style={{ fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px currentColor" }}>{label}</span>
+      <span>{label}</span>
     </Link>
   );
 }

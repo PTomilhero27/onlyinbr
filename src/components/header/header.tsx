@@ -87,7 +87,7 @@ export function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex">
-          <WhatsAppCTA context="hero" label="Entrar em Contato" variant="primary" size="sm" />
+          <WhatsAppCTA context="hero" label="Entrar em Contato" variant="blue" size="sm" />
         </div>
 
         {/* Mobile: Sheet */}
@@ -137,9 +137,9 @@ export function Header() {
               <WhatsAppCTA
                 context="hero"
                 label="Entrar em Contato"
-                variant="secondary"
+                variant="blue"
                 size="md"
-                className="w-full justify-center bg-brand-green hover:bg-brand-green-dark text-white font-bold"
+                className="w-full justify-center"
               />
             </div>
           </SheetContent>

@@ -9,8 +9,22 @@ import { defaultViewport } from "@/lib/motion";
 import type { Service } from "@/data/services";
 import { cn } from "@/lib/utils";
 
+interface LegacyService {
+  id: string;
+  number?: string;
+  slug?: string;
+  title: string;
+  headline: string;
+  description?: string;
+  badge?: string;
+  items?: string[];
+  audience?: string[];
+  ctaLabel?: string;
+  ctaContext?: string;
+}
+
 interface ServiceSectionProps {
-  service: Service;
+  service: LegacyService | Service;
   imageSrc: string;
   imageAlt: string;
   imagePosition?: "left" | "right";
@@ -29,10 +43,11 @@ export function ServiceSection({
   dark = false,
 }: ServiceSectionProps) {
   const isRight = imagePosition === "right";
+  const legacy = service as LegacyService;
 
   return (
     <section
-      id={service.slug}
+      id={legacy.slug ?? service.id}
       className={cn(
         "section-padding relative overflow-hidden",
         dark ? "bg-[#f8fafc] border-y border-neutral-200/60" : "bg-white"
@@ -94,7 +109,7 @@ export function ServiceSection({
             </motion.p>
 
             {/* Benefícios / Itens inclusos */}
-            {(service.items ?? []).length > 0 && (
+            {(legacy.items ?? []).length > 0 && (
               <motion.ul
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -103,7 +118,7 @@ export function ServiceSection({
                 className="space-y-3 mb-8"
                 aria-label="Itens do serviço"
               >
-                {(service.items ?? []).map((item) => (
+                {(legacy.items ?? []).map((item: string) => (
                   <li key={item} className="flex items-start gap-3">
                     <div className="w-5 h-5 rounded-full bg-brand-green/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                       <Check
@@ -130,12 +145,12 @@ export function ServiceSection({
                   Ideal para
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {service.audience.map((audience) => (
+                  {service.audience.map((aud: string) => (
                     <span
-                      key={audience}
+                      key={aud}
                       className="text-xs font-semibold text-neutral-700 bg-neutral-100 hover:bg-neutral-200/80 px-3 py-1 rounded-full transition-colors"
                     >
-                      {audience}
+                      {aud}
                     </span>
                   ))}
                 </div>

@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, CheckCircle2 } from "lucide-react";
+import { Send, CheckCircle2, MessageCircle, Clock, ShieldCheck, Zap } from "lucide-react";
 import { WhatsAppCTA } from "@/components/shared/whatsapp-cta";
-import { SectionLabel } from "@/components/shared/section-wrapper";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -51,114 +50,117 @@ export function Contact() {
   return (
     <section
       id="contato"
-      className="section-padding relative overflow-hidden"
+      className="relative py-20 lg:py-28 overflow-hidden"
       aria-labelledby="contact-title"
     >
-      <div className="container-site relative z-10">
+      {/* Efeito de luz ambiente de fundo */}
+      <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-brand-yellow/10 rounded-full blur-[180px] opacity-25" />
+      </div>
 
-        {/* Cabeçalho da seção */}
-        <div className="text-center mb-14">
+      <div className="container-site relative z-10 w-full px-5 sm:px-8 md:px-12 lg:px-16">
+
+        {/* ── BLOCO PRINCIPAL DE CONVERSÃO & CONTATO ── */}
+        <div className="max-w-4xl mx-auto text-center space-y-6 mb-12">
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 14 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={defaultViewport}
-            transition={{ duration: 0.5 }}
-            className="mb-4"
+            transition={{ duration: 0.6 }}
           >
-            <SectionLabel>Vamos Conversar</SectionLabel>
+            <h2
+              id="contact-title"
+              className="text-3xl sm:text-5xl lg:text-6xl font-heading font-bold leading-[1.08] tracking-tight text-white mb-4"
+            >
+              Vamos criar{" "}
+              <span
+                className="relative inline-block text-brand-yellow"
+                style={{
+                  fontFamily: "var(--font-brasilero)",
+                  fontWeight: 700,
+                  WebkitTextStroke: "0.4px currentColor",
+                }}
+              >
+                algo único?
+                <motion.svg
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: 1 }}
+                  viewport={defaultViewport}
+                  transition={{ duration: 1.1, delay: 0.4, ease: "easeOut" }}
+                  aria-hidden="true"
+                  className="absolute left-0 -bottom-1.5 w-full h-2.5 text-brand-yellow fill-none stroke-current stroke-[5]"
+                  viewBox="0 0 100 12"
+                  preserveAspectRatio="none"
+                >
+                  <path d="M0,7 Q50,0 100,7" strokeLinecap="round" />
+                </motion.svg>
+              </span>
+            </h2>
+
+            <p className="text-neutral-200 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto leading-relaxed font-normal">
+              Da estrutura pesada à responsabilidade técnica com ART, da equipe de staff à cobertura de mídia. Converse diretamente com nossos especialistas no WhatsApp e tenha uma operação sem imprevistos.
+            </p>
           </motion.div>
 
-          <motion.h2
-            id="contact-title"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={defaultViewport}
-            transition={{ duration: 0.8 }}
-            className="text-3xl sm:text-4xl lg:text-6xl font-heading font-bold leading-[1.08] tracking-tight text-white mb-5"
-          >
-            Vamos criar{" "}
-            <span className="text-brand-yellow">algo juntos?</span>
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={defaultViewport}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-neutral-200 text-base sm:text-lg max-w-xl mx-auto mb-8 font-normal"
-          >
-            O canal mais ágil é o WhatsApp. Nossa equipe está pronta para atender seu evento, licitação ou orçamento.
-          </motion.p>
-
-          {/* CTA WhatsApp — principal */}
+          {/* CTA Principal de WhatsApp */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={defaultViewport}
             transition={{ duration: 0.5, delay: 0.2 }}
+            className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <WhatsAppCTA
               context="contact"
-              label="Iniciar conversa no WhatsApp"
+              label="Iniciar Conversa no WhatsApp"
               variant="primary"
               size="lg"
-              className="bg-brand-yellow text-neutral-950 hover:bg-brand-yellow-dark shadow-2xl font-bold"
+              className="w-full sm:w-auto bg-brand-yellow text-neutral-950 hover:bg-brand-yellow-dark shadow-2xl font-bold py-4 px-8 text-base sm:text-lg hover:scale-105 transition-all cursor-pointer"
             />
           </motion.div>
+
+
         </div>
 
-        {/* Divisor */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={defaultViewport}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="flex items-center gap-6 mb-12 max-w-2xl mx-auto"
-        >
-          <div className="flex-1 h-px bg-white/15" />
-          <span className="text-brand-yellow/80 text-xs uppercase tracking-widest font-bold">
-            ou envie uma mensagem técnica
-          </span>
-          <div className="flex-1 h-px bg-white/15" />
-        </motion.div>
+        {/* ── FORMULÁRIO DE BRIEFING TÉCNICO (OPCIONAL) ── */}
+        <div className="max-w-2xl mx-auto pt-8 border-t border-white/10">
+          <div className="text-center mb-6">
+            <span className="text-xs uppercase tracking-widest font-bold text-neutral-400">
+              Ou se preferir, envie os dados do seu projeto por e-mail:
+            </span>
+          </div>
 
-        {/* Formulário — secundário */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={defaultViewport}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="max-w-2xl mx-auto"
-        >
           {submitted ? (
-            <div
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               role="alert"
-              className="text-center py-12 px-6 border border-brand-yellow/40 rounded-3xl liquid-glass-opaque shadow-2xl"
+              className="text-center py-10 px-6 border border-brand-yellow/40 rounded-3xl bg-gradient-to-b from-emerald-950/60 to-emerald-950/20 backdrop-blur-md shadow-2xl"
             >
-              <CheckCircle2 className="w-12 h-12 text-brand-yellow mx-auto mb-3" />
-              <p className="text-white font-heading font-bold text-2xl mb-2">
+              <CheckCircle2 className="w-10 h-10 text-brand-yellow mx-auto mb-2" />
+              <p className="text-white font-heading font-bold text-xl mb-1">
                 Mensagem recebida com sucesso!
               </p>
-              <p className="text-neutral-200 font-normal">
+              <p className="text-neutral-300 text-sm font-normal">
                 Em breve nossa equipe técnica entrará em contato com você.
               </p>
               <button
                 onClick={() => setSubmitted(false)}
-                className="mt-6 text-sm text-brand-yellow hover:text-white font-bold underline transition-colors"
+                className="mt-4 text-xs text-brand-yellow hover:text-white font-bold underline transition-colors cursor-pointer"
               >
-                Enviar outra mensagem
+                Enviar outro briefing
               </button>
-            </div>
+            </motion.div>
           ) : (
             <form
               onSubmit={handleSubmit}
               aria-label="Formulário de contato"
-              className="space-y-4 p-6 sm:p-9 liquid-glass-opaque rounded-3xl border border-white/20 shadow-2xl"
+              className="space-y-4 p-6 sm:p-8 bg-gradient-to-b from-emerald-950/40 via-emerald-950/20 to-black/30 backdrop-blur-md rounded-3xl border border-emerald-500/20 shadow-2xl"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="contact-name" className="text-neutral-200 text-xs font-bold uppercase tracking-wider">
-                    Nome *
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1">
+                  <Label htmlFor="contact-name" className="text-neutral-200 text-xs font-semibold">
+                    Nome completo *
                   </Label>
                   <Input
                     id="contact-name"
@@ -167,12 +169,12 @@ export function Contact() {
                     required
                     value={form.name}
                     onChange={handleChange}
-                    placeholder="Seu nome completo"
-                    className="liquid-glass border-white/20 text-white placeholder:text-neutral-400 focus:border-brand-yellow rounded-xl"
+                    placeholder="Seu nome"
+                    className="bg-black/35 border-white/15 text-white placeholder:text-neutral-400 focus:border-brand-yellow focus:bg-black/50 rounded-xl text-sm"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="contact-company" className="text-neutral-200 text-xs font-bold uppercase tracking-wider">
+                <div className="space-y-1">
+                  <Label htmlFor="contact-company" className="text-neutral-200 text-xs font-semibold">
                     Empresa / Paróquia / Órgão
                   </Label>
                   <Input
@@ -182,15 +184,15 @@ export function Contact() {
                     value={form.company}
                     onChange={handleChange}
                     placeholder="Nome da organização"
-                    className="liquid-glass border-white/20 text-white placeholder:text-neutral-400 focus:border-brand-yellow rounded-xl"
+                    className="bg-black/35 border-white/15 text-white placeholder:text-neutral-400 focus:border-brand-yellow focus:bg-black/50 rounded-xl text-sm"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="contact-email" className="text-neutral-200 text-xs font-bold uppercase tracking-wider">
-                    E-mail corporativo *
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1">
+                  <Label htmlFor="contact-email" className="text-neutral-200 text-xs font-semibold">
+                    E-mail de contato *
                   </Label>
                   <Input
                     id="contact-email"
@@ -199,50 +201,51 @@ export function Contact() {
                     required
                     value={form.email}
                     onChange={handleChange}
-                    placeholder="contato@empresa.com.br"
-                    className="liquid-glass border-white/20 text-white placeholder:text-neutral-400 focus:border-brand-yellow rounded-xl"
+                    placeholder="seuemail@empresa.com"
+                    className="bg-black/35 border-white/15 text-white placeholder:text-neutral-400 focus:border-brand-yellow focus:bg-black/50 rounded-xl text-sm"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="contact-phone" className="text-neutral-200 text-xs font-bold uppercase tracking-wider">
-                    Telefone / WhatsApp
+                <div className="space-y-1">
+                  <Label htmlFor="contact-phone" className="text-neutral-200 text-xs font-semibold">
+                    Telefone / WhatsApp *
                   </Label>
                   <Input
                     id="contact-phone"
                     name="phone"
                     type="tel"
+                    required
                     value={form.phone}
                     onChange={handleChange}
                     placeholder="(11) 99999-9999"
-                    className="liquid-glass border-white/20 text-white placeholder:text-neutral-400 focus:border-brand-yellow rounded-xl"
+                    className="bg-black/35 border-white/15 text-white placeholder:text-neutral-400 focus:border-brand-yellow focus:bg-black/50 rounded-xl text-sm"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="contact-service" className="text-neutral-200 text-xs font-bold uppercase tracking-wider">
-                  Serviço de interesse
+              <div className="space-y-1">
+                <Label htmlFor="contact-service" className="text-neutral-200 text-xs font-semibold">
+                  Serviço de interesse principal
                 </Label>
                 <select
                   id="contact-service"
                   name="service"
                   value={form.service}
                   onChange={handleChange}
-                  className="w-full liquid-glass border border-white/20 text-white placeholder:text-neutral-400 focus:border-brand-yellow rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-yellow transition-colors shadow-2xs font-normal"
+                  className="w-full bg-black/35 border border-white/15 text-white placeholder:text-neutral-400 focus:border-brand-yellow focus:bg-black/50 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-yellow transition-colors shadow-2xs font-normal"
                   aria-label="Selecione o serviço de interesse"
                 >
-                  <option value="" className="bg-[#0f2e1b] text-white">Selecione um serviço...</option>
+                  <option value="" className="bg-[#0b3318] text-white">Selecione o serviço...</option>
                   {serviceOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value} className="bg-[#0f2e1b] text-white">
+                    <option key={opt.value} value={opt.value} className="bg-[#0b3318] text-white">
                       {opt.label}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="contact-message" className="text-neutral-200 text-xs font-bold uppercase tracking-wider">
-                  Mensagem ou Detalhes do Evento *
+              <div className="space-y-1">
+                <Label htmlFor="contact-message" className="text-neutral-200 text-xs font-semibold">
+                  Detalhes do Evento ou Necessidades Técnicas *
                 </Label>
                 <Textarea
                   id="contact-message"
@@ -250,26 +253,23 @@ export function Contact() {
                   required
                   value={form.message}
                   onChange={handleChange}
-                  placeholder="Conte sobre data prevista, local, porte do evento ou necessidades técnicas..."
-                  rows={4}
-                  className="liquid-glass border-white/20 text-white placeholder:text-neutral-400 focus:border-brand-yellow rounded-xl resize-none font-normal"
+                  placeholder="Data prevista, localidade, público estimado, necessidades de palco, som, luz, alvará ou staff..."
+                  rows={3}
+                  className="bg-black/35 border-white/15 text-white placeholder:text-neutral-400 focus:border-brand-yellow focus:bg-black/50 rounded-xl resize-none text-sm font-normal"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 bg-brand-yellow hover:bg-brand-yellow-dark text-neutral-950 font-bold rounded-xl py-3.5 px-6 transition-all duration-200 shadow-xl cursor-pointer text-sm sm:text-base"
+                className="w-full flex items-center justify-center gap-2 bg-brand-yellow hover:bg-brand-yellow-dark text-neutral-950 font-bold rounded-xl py-3 px-6 transition-all duration-200 shadow-xl cursor-pointer text-sm sm:text-base hover:scale-[1.01]"
               >
                 <Send className="w-4 h-4" aria-hidden="true" />
-                Enviar mensagem
+                Enviar Briefing Técnico
               </button>
-
-              <p className="text-[11px] text-neutral-300 text-center font-normal pt-1">
-                Seus dados serão tratados com total confidencialidade técnica.
-              </p>
             </form>
           )}
-        </motion.div>
+        </div>
+
       </div>
     </section>
   );
