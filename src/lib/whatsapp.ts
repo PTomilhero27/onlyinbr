@@ -4,8 +4,8 @@
  */
 
 export const WHATSAPP_CONFIG = {
-  /** Número no formato internacional, sem + nem espaços */
-  number: "5511999999999", // TODO: preencher com o WhatsApp real da Only in BR
+  /** Número no formato internacional, sem + nem espaços. Inicia vazio. */
+  number: "" as string,
 
   /** Mensagens padrão por contexto de serviço */
   messages: {
@@ -48,9 +48,13 @@ export type WhatsAppUrlOptions = {
 
 /**
  * Gera a URL do WhatsApp com número e mensagem codificados.
- * Aceita string de contexto simples OU objeto com opções avançadas.
+ * Se nenhum número for configurado, retorna '#contato' para levar ao formulário.
  */
 export function getWhatsAppUrl(optionsOrContext: WhatsAppContext | WhatsAppUrlOptions = "default"): string {
+  if (!WHATSAPP_CONFIG.number || WHATSAPP_CONFIG.number.trim().length === 0) {
+    return "#contato";
+  }
+
   let rawMessage: string = WHATSAPP_CONFIG.messages.default;
 
   if (typeof optionsOrContext === "string") {
@@ -66,7 +70,7 @@ export function getWhatsAppUrl(optionsOrContext: WhatsAppContext | WhatsAppUrlOp
   }
 
   const message = encodeURIComponent(rawMessage);
-  return `https://wa.me/${WHATSAPP_CONFIG.number}?text=${message}`;
+  return `https://wa.me/${WHATSAPP_CONFIG.number.replace(/\D/g, "")}?text=${message}`;
 }
 
 /** Alias para compatibilidade */

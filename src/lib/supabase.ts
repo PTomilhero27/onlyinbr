@@ -38,13 +38,13 @@ export async function getPortfolioProjects(): Promise<PortfolioProject[]> {
     });
 
     if (!res.ok) {
-      console.warn("Supabase fetch returned error status, using local fallback.", res.status);
-      return portfolioProjects;
+      console.warn("Supabase fetch returned error status.", res.status);
+      return [];
     }
 
     const data = await res.json();
     if (!Array.isArray(data) || data.length === 0) {
-      return portfolioProjects;
+      return [];
     }
 
     // Normaliza os dados remotos para o tipo PortfolioProject

@@ -37,7 +37,7 @@ import { useSiteStore } from "@/lib/store";
 
 export function Portfolio() {
   const { projects: storeProjects, contact } = useSiteStore();
-  const rawProjects = storeProjects && storeProjects.length > 0 ? storeProjects : initialProjects;
+  const rawProjects = storeProjects || [];
 
   // Filtra apenas projetos PUBLICADOS que possuem pelo menos 1 edição publicada
   const publishedProjects = rawProjects
@@ -189,8 +189,33 @@ export function Portfolio() {
           </div>
         </div>
 
-        {/* ── FILTROS INTERATIVOS POR PROJETO ── */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
+        {/* ── SE NÃO HOUVER PROJETOS CADASTRADOS (INÍCIO DO ZERO) ── */}
+        {publishedProjects.length === 0 ? (
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-transparent p-8 sm:p-14 text-center max-w-2xl mx-auto backdrop-blur-xl my-6">
+            <div className="w-14 h-14 rounded-2xl bg-brand-yellow/15 border border-brand-yellow/30 flex items-center justify-center mx-auto mb-5 text-brand-yellow">
+              <Sparkles className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl sm:text-2xl font-heading font-bold text-white mb-2">
+              Novas produções em breve
+            </h3>
+            <p className="text-neutral-300 text-sm sm:text-base leading-relaxed mb-6 font-normal">
+              Estamos preparando a cobertura e os registros das próximas grandes experiências da Only in BR.
+              Tem uma ideia ou quer planejar seu evento conosco?
+            </p>
+            <div className="flex justify-center">
+              <WhatsAppCTA
+                context="portfolio"
+                label="Falar com a Equipe"
+                variant="primary"
+                size="md"
+                className="font-bold shadow-xl hover:scale-[1.02] transition-all"
+              />
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* ── FILTROS INTERATIVOS POR PROJETO ── */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
           {dynamicCategories.map((cat) => {
             const isSelected = currentCategory === cat.id;
 
@@ -320,6 +345,8 @@ export function Portfolio() {
             ))}
           </AnimatePresence>
         </motion.div>
+          </>
+        )}
 
         {/* ── NÚMEROS DE AUTORIDADE E RESULTADOS ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mt-16 pt-10 border-t border-white/10">

@@ -60,10 +60,12 @@ export const portfolioCategories = [
   { id: "feiras-gastronomicas", label: "Feiras Gastronômicas" },
   { id: "sambara", label: "Sambaravá" },
   { id: "sambe", label: "Sambê" },
-  { id: "madagema-convida", label: "Madagema Convida" },
 ] as const;
 
-export const portfolioProjects: PortfolioProject[] = [
+export const portfolioProjects: PortfolioProject[] = [];
+
+/** Exemplos de referência para testes locais (não exibidos em produção) */
+export const samplePortfolioProjects: PortfolioProject[] = [
   {
     id: "feiras-gastronomicas",
     slug: "feiras-gastronomicas",

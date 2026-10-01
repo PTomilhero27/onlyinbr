@@ -111,7 +111,9 @@ export function ContactSection({
         <div className="rounded-[24px] border border-emerald-500/30 bg-emerald-950/35 p-4 space-y-2 text-xs">
           <div>
             <span className="text-[10px] text-neutral-400 block font-semibold">Destino:</span>
-            <span className="text-white font-mono font-bold">+{contactForm.whatsappNumber || "5511999999999"}</span>
+            <span className="text-white font-mono font-bold">
+              {contactForm.whatsappNumber ? `+${contactForm.whatsappNumber}` : "Nenhum número configurado"}
+            </span>
           </div>
           <div>
             <span className="text-[10px] text-neutral-400 block font-semibold">Mensagem:</span>
@@ -121,17 +123,23 @@ export function ContactSection({
           </div>
         </div>
 
-        <a
-          href={`https://wa.me/${contactForm.whatsappNumber}?text=${encodeURIComponent(
-            contactForm.messages?.default || ""
-          )}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-all font-heading shadow-[0_16px_32px_-16px_rgba(16,185,129,0.9)]"
-        >
-          <ExternalLink className="w-3.5 h-3.5" />
-          <span>Testar conversa</span>
-        </a>
+        {contactForm.whatsappNumber ? (
+          <a
+            href={`https://wa.me/${contactForm.whatsappNumber}?text=${encodeURIComponent(
+              contactForm.messages?.default || ""
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-all font-heading shadow-[0_16px_32px_-16px_rgba(16,185,129,0.9)]"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Testar conversa</span>
+          </a>
+        ) : (
+          <div className="w-full py-3 rounded-2xl bg-white/5 text-neutral-400 text-xs text-center border border-white/10">
+            Preencha e salve o número acima para testar
+          </div>
+        )}
       </div>
     </div>
   );

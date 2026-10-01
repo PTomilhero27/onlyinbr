@@ -10,6 +10,7 @@ import {
 import { faqItems as initialFaqItems, type FaqItem } from "@/data/faq";
 import { WHATSAPP_CONFIG } from "@/lib/whatsapp";
 import { company } from "@/data/company";
+import { getPortfolioProjects, isSupabaseConfigured } from "@/lib/supabase";
 
 export type ContactConfig = {
   whatsappNumber: string;
@@ -23,11 +24,11 @@ export type ContactConfig = {
 };
 
 const initialContactConfig: ContactConfig = {
-  whatsappNumber: WHATSAPP_CONFIG.number,
-  displayPhone: "(11) 99999-9999",
+  whatsappNumber: "",
+  displayPhone: "",
   email: "contato@onlyinbr.com.br",
-  instagram: "@onlyinbr",
-  botecagemInstagram: "@botecagemsp",
+  instagram: "",
+  botecagemInstagram: "",
   address: "São Paulo, SP e Região Metropolitana",
   cnpj: company.cnpj,
   messages: { ...WHATSAPP_CONFIG.messages },
@@ -40,7 +41,7 @@ export type SiteStoreData = {
   adminPassword: string; // Hash or password string
 };
 
-const STORAGE_KEY = "onlyinbr_admin_site_data_v1";
+const STORAGE_KEY = "onlyinbr_admin_site_data_v2";
 const AUTH_KEY = "onlyinbr_admin_session_auth";
 const DEFAULT_ADMIN_PASS = "onlyinbr2025"; // Senha padrão inicial
 
@@ -93,9 +94,10 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  // Carrega dados salvos no localStorage na inicialização
+  // Carrega dados salvos no localStorage na inicialização e sincroniza com Supabase
   useEffect(() => {
     try {
+      localStorage.removeItem("onlyinbr_admin_site_data_v1");
       const savedAuth = sessionStorage.getItem(AUTH_KEY);
       if (savedAuth === "true") {
         setIsAuthenticated(true);
@@ -116,6 +118,19 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         if (parsed.adminPassword) {
           setAdminPassword(parsed.adminPassword);
         }
+      }
+
+      // Se o Supabase estiver configurado, sincroniza com o banco de dados oficial
+      if (isSupabaseConfigured) {
+        getPortfolioProjects()
+          .then((remoteProjects) => {
+            if (Array.isArray(remoteProjects)) {
+              setProjects(remoteProjects);
+            }
+          })
+          .catch((err) => {
+            console.warn("Supabase fetch notice:", err);
+          });
       }
     } catch (e) {
       console.warn("Erro ao carregar dados do localStorage:", e);

@@ -53,19 +53,27 @@ export function WhatsAppCTA({
 }: WhatsAppCTAProps) {
   const { contact } = useSiteStore();
   
-  // Se o painel alterou o número ou mensagem, usa a configuração dinâmica
-  let url = getWhatsAppUrl(context);
-  if (contact?.whatsappNumber) {
-    const rawMessage = contact.messages?.[context] || contact.messages?.default || "";
-    url = `https://wa.me/${contact.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(rawMessage)}`;
+  // Se houver número configurado (no store ou no config), monta o link do WhatsApp;
+  // caso contrário, direciona para o formulário de contato do site (#contato).
+  const rawNumber = contact?.whatsappNumber?.replace(/\D/g, "") || "";
+  const hasPhone = rawNumber.length >= 8;
+
+  let url = "#contato";
+  if (hasPhone) {
+    const rawMessage = contact?.messages?.[context] || contact?.messages?.default || "";
+    url = `https://wa.me/${rawNumber}?text=${encodeURIComponent(rawMessage)}`;
+  } else {
+    url = getWhatsAppUrl(context);
   }
+
+  const isExternal = url.startsWith("https://");
 
   return (
     <Link
       href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`${label} — abre o WhatsApp`}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
+      aria-label={isExternal ? `${label} — abre o WhatsApp` : `${label} — formulário de contato`}
       className={cn(
         "inline-flex items-center justify-center rounded-full font-sans font-bold cursor-pointer",
         "transition-all duration-200 ease-out",
