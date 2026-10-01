@@ -5,6 +5,7 @@ import "./globals.css";
 import { LenisProvider } from "@/components/shared/lenis-provider";
 import { SiteStoreProvider } from "@/lib/store";
 import { StructuredData } from "@/lib/structured-data";
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -150,6 +151,7 @@ export default function RootLayout({
           <LenisProvider>{children}</LenisProvider>
         </SiteStoreProvider>
       </body>
+      <Analytics />
     </html>
   );
 }
