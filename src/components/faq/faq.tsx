@@ -8,12 +8,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { faqItems } from "@/data/faq";
+import { faqItems as initialFaqItems } from "@/data/faq";
 import { WhatsAppCTA } from "@/components/shared/whatsapp-cta";
 import { defaultViewport } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { useSiteStore } from "@/lib/store";
 
 export function Faq() {
+  const { faq: storeFaq } = useSiteStore();
+  const items = storeFaq && storeFaq.length > 0 ? storeFaq : initialFaqItems;
   return (
     <section
       id="faq"
@@ -88,7 +91,7 @@ export function Faq() {
               className="divide-y divide-white/10 border-t border-b border-white/10"
               aria-label="Perguntas frequentes"
             >
-              {faqItems.map((item) => (
+              {items.map((item) => (
                 <AccordionItem
                   key={item.id}
                   value={item.id}

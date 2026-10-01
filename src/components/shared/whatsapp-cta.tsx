@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { getWhatsAppUrl, type WhatsAppContext } from "@/lib/whatsapp";
+import { useSiteStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "blue" | "outline" | "ghost";
@@ -38,8 +41,7 @@ const sizeStyles: Record<Size, string> = {
  * WhatsAppCTA — Only in BR
  *
  * Componente central de CTA para WhatsApp.
- * Todos os botões de WhatsApp do site devem usar este componente.
- * O número e as mensagens são gerenciados em src/lib/whatsapp.ts.
+ * Conectado dinamicamente ao número e mensagens configurados no painel de administração.
  */
 export function WhatsAppCTA({
   context = "default",
@@ -49,7 +51,14 @@ export function WhatsAppCTA({
   className,
   showIcon = true,
 }: WhatsAppCTAProps) {
-  const url = getWhatsAppUrl(context);
+  const { contact } = useSiteStore();
+  
+  // Se o painel alterou o número ou mensagem, usa a configuração dinâmica
+  let url = getWhatsAppUrl(context);
+  if (contact?.whatsappNumber) {
+    const rawMessage = contact.messages?.[context] || contact.messages?.default || "";
+    url = `https://wa.me/${contact.whatsappNumber.replace(/\D/g, "")}?text=${encodeURIComponent(rawMessage)}`;
+  }
 
   return (
     <Link
@@ -58,7 +67,7 @@ export function WhatsAppCTA({
       rel="noopener noreferrer"
       aria-label={`${label} — abre o WhatsApp`}
       className={cn(
-        "inline-flex items-center justify-center rounded-full font-sans font-bold",
+        "inline-flex items-center justify-center rounded-full font-sans font-bold cursor-pointer",
         "transition-all duration-200 ease-out",
         "focus-visible:outline-2 focus-visible:outline-brand-yellow focus-visible:outline-offset-3",
         variantStyles[variant],

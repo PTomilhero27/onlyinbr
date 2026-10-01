@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/components/shared/lenis-provider";
+import { SiteStoreProvider } from "@/lib/store";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -102,7 +103,9 @@ export default function RootLayout({
       className={`${inter.variable} ${cocogoose.variable} ${brasilero.variable} scroll-smooth`}
     >
       <body className="bg-white text-neutral-900 font-body antialiased">
-        <LenisProvider>{children}</LenisProvider>
+        <SiteStoreProvider>
+          <LenisProvider>{children}</LenisProvider>
+        </SiteStoreProvider>
       </body>
     </html>
   );

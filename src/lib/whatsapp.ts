@@ -11,6 +11,7 @@ export const WHATSAPP_CONFIG = {
   messages: {
     default: "Olá! Gostaria de conversar com a equipe da Only in BR sobre produção de eventos.",
     hero: "Olá! Vim pelo site da Only in BR e gostaria de conhecer mais sobre os serviços de eventos.",
+    portfolio: "Olá! Gostaria de conversar sobre os projetos e edições de eventos da Only in BR.",
     corporativo:
       "Olá! Gostaria de solicitar um orçamento para Produção de Evento Corporativo com a Only in BR.",
     igrejas:
@@ -38,12 +39,35 @@ export const WHATSAPP_CONFIG = {
 
 export type WhatsAppContext = keyof typeof WHATSAPP_CONFIG.messages | string;
 
+export type WhatsAppUrlOptions = {
+  context?: WhatsAppContext;
+  customMessage?: string;
+  source?: string;
+  service?: string;
+};
+
 /**
  * Gera a URL do WhatsApp com número e mensagem codificados.
+ * Aceita string de contexto simples OU objeto com opções avançadas.
  */
-export function getWhatsAppUrl(context: string = "default"): string {
-  const messages = WHATSAPP_CONFIG.messages as Record<string, string>;
-  const rawMessage = messages[context] ?? messages.default;
+export function getWhatsAppUrl(optionsOrContext: WhatsAppContext | WhatsAppUrlOptions = "default"): string {
+  let rawMessage: string = WHATSAPP_CONFIG.messages.default;
+
+  if (typeof optionsOrContext === "string") {
+    const messages = WHATSAPP_CONFIG.messages as Record<string, string>;
+    rawMessage = messages[optionsOrContext] ?? WHATSAPP_CONFIG.messages.default;
+  } else if (typeof optionsOrContext === "object" && optionsOrContext !== null) {
+    if (optionsOrContext.customMessage) {
+      rawMessage = optionsOrContext.customMessage;
+    } else if (optionsOrContext.context) {
+      const messages = WHATSAPP_CONFIG.messages as Record<string, string>;
+      rawMessage = messages[optionsOrContext.context] ?? WHATSAPP_CONFIG.messages.default;
+    }
+  }
+
   const message = encodeURIComponent(rawMessage);
   return `https://wa.me/${WHATSAPP_CONFIG.number}?text=${message}`;
 }
+
+/** Alias para compatibilidade */
+export const getWhatsAppLink = getWhatsAppUrl;
