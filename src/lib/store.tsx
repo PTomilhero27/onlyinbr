@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import {
   portfolioProjects as initialProjects,
   type PortfolioProject,
@@ -10,7 +10,8 @@ import {
 import { faqItems as initialFaqItems, type FaqItem } from "@/data/faq";
 import { WHATSAPP_CONFIG } from "@/lib/whatsapp";
 import { company } from "@/data/company";
-import { getPortfolioProjects, isSupabaseConfigured } from "@/lib/supabase";
+import { portfolioService } from "@/lib/services/portfolio-service";
+import { isSupabaseConfigured } from "@/lib/api-client";
 
 export type ContactConfig = {
   whatsappNumber: string;
@@ -38,12 +39,12 @@ export type SiteStoreData = {
   projects: PortfolioProject[];
   faq: FaqItem[];
   contact: ContactConfig;
-  adminPassword: string; // Hash or password string
+  adminPassword: string;
 };
 
 const STORAGE_KEY = "onlyinbr_admin_site_data_v2";
 const AUTH_KEY = "onlyinbr_admin_session_auth";
-const DEFAULT_ADMIN_PASS = "onlyinbr2025"; // Senha padrão inicial
+const DEFAULT_ADMIN_PASS = "onlyinbr2025";
 
 interface SiteStoreContextType {
   projects: PortfolioProject[];
@@ -53,22 +54,29 @@ interface SiteStoreContextType {
   login: (password: string) => boolean;
   logout: () => void;
   changePassword: (newPass: string) => void;
-  
+
+  // Status de Sincronização Supabase
+  isSyncing: boolean;
+  syncError: string | null;
+  syncSuccess: boolean;
+  syncToSupabase: () => Promise<boolean>;
+  refreshFromSupabase: () => Promise<void>;
+
   // Ações de Projetos
-  addProject: (project: Omit<PortfolioProject, "id">) => void;
-  updateProject: (id: string, project: Partial<PortfolioProject>) => void;
-  deleteProject: (id: string) => void;
-  toggleProjectVisibility: (id: string) => void;
+  addProject: (project: Omit<PortfolioProject, "id">) => Promise<PortfolioProject>;
+  updateProject: (id: string, project: Partial<PortfolioProject>) => Promise<void>;
+  deleteProject: (id: string) => Promise<void>;
+  toggleProjectVisibility: (id: string) => Promise<void>;
 
   // Ações de Edições
-  addEdition: (projectId: string, edition: Omit<ProjectEdition, "id">) => void;
-  updateEdition: (projectId: string, editionId: string, edition: Partial<ProjectEdition>) => void;
-  deleteEdition: (projectId: string, editionId: string) => void;
-  toggleEditionVisibility: (projectId: string, editionId: string) => void;
+  addEdition: (projectId: string, edition: Omit<ProjectEdition, "id">) => Promise<ProjectEdition>;
+  updateEdition: (projectId: string, editionId: string, edition: Partial<ProjectEdition>) => Promise<void>;
+  deleteEdition: (projectId: string, editionId: string) => Promise<void>;
+  toggleEditionVisibility: (projectId: string, editionId: string) => Promise<void>;
 
   // Ações de Fotos da Edição
-  addEditionPhoto: (projectId: string, editionId: string, photo: Omit<ProjectEditionPhoto, "id">) => void;
-  deleteEditionPhoto: (projectId: string, editionId: string, photoId: string) => void;
+  addEditionPhoto: (projectId: string, editionId: string, photo: Omit<ProjectEditionPhoto, "id">) => Promise<ProjectEditionPhoto>;
+  deleteEditionPhoto: (projectId: string, editionId: string, photoId: string) => Promise<void>;
 
   // Ações de FAQ
   addFaqItem: (item: Omit<FaqItem, "id">) => void;
@@ -77,7 +85,7 @@ interface SiteStoreContextType {
 
   // Ações de Contato / WhatsApp
   updateContact: (newContact: Partial<ContactConfig>) => void;
-  
+
   // Utilidades
   resetToDefaults: () => void;
   exportDataJson: () => string;
@@ -94,10 +102,21 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  // Carrega dados salvos no localStorage na inicialização e sincroniza com Supabase
+  // Estados de Sincronização Supabase
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncSuccess, setSyncSuccess] = useState<boolean>(false);
+
+  const clearSyncFeedback = useCallback(() => {
+    setTimeout(() => {
+      setSyncSuccess(false);
+      setSyncError(null);
+    }, 4000);
+  }, []);
+
+  // Carrega dados salvos no localStorage e sincroniza com Supabase
   useEffect(() => {
     try {
-      localStorage.removeItem("onlyinbr_admin_site_data_v1");
       const savedAuth = sessionStorage.getItem(AUTH_KEY);
       if (savedAuth === "true") {
         setIsAuthenticated(true);
@@ -106,7 +125,7 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed: Partial<SiteStoreData> = JSON.parse(raw);
-        if (parsed.projects && Array.isArray(parsed.projects)) {
+        if (parsed.projects && Array.isArray(parsed.projects) && parsed.projects.length > 0) {
           setProjects(parsed.projects);
         }
         if (parsed.faq && Array.isArray(parsed.faq)) {
@@ -120,26 +139,31 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // Se o Supabase estiver configurado, sincroniza com o banco de dados oficial
+      // Sincroniza com o Supabase oficial
       if (isSupabaseConfigured) {
-        getPortfolioProjects()
+        setIsSyncing(true);
+        portfolioService
+          .getProjects()
           .then((remoteProjects) => {
-            if (Array.isArray(remoteProjects)) {
+            if (Array.isArray(remoteProjects) && remoteProjects.length > 0) {
               setProjects(remoteProjects);
             }
           })
           .catch((err) => {
             console.warn("Supabase fetch notice:", err);
+          })
+          .finally(() => {
+            setIsSyncing(false);
           });
       }
     } catch (e) {
-      console.warn("Erro ao carregar dados do localStorage:", e);
+      console.warn("Erro ao carregar dados locais:", e);
     } finally {
       setIsLoaded(true);
     }
   }, []);
 
-  // Salva alterações no localStorage
+  // Salva alterações no localStorage para backup offline
   useEffect(() => {
     if (!isLoaded) return;
     try {
@@ -154,6 +178,51 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
       console.error("Erro ao salvar dados no localStorage:", e);
     }
   }, [projects, faq, contact, adminPassword, isLoaded]);
+
+  // Recarrega dados diretamente do Supabase
+  const refreshFromSupabase = useCallback(async () => {
+    if (!isSupabaseConfigured) return;
+    setIsSyncing(true);
+    try {
+      const remote = await portfolioService.getProjects();
+      if (Array.isArray(remote)) {
+        setProjects(remote);
+        setSyncSuccess(true);
+      }
+    } catch (err: any) {
+      console.error("Erro ao recarregar do Supabase:", err);
+      setSyncError("Erro ao buscar dados do Supabase. Verifique se o RLS está liberado.");
+    } finally {
+      setIsSyncing(false);
+      clearSyncFeedback();
+    }
+  }, [clearSyncFeedback]);
+
+  // Sincroniza todos os projetos atuais com o Supabase
+  const syncToSupabase = useCallback(async (): Promise<boolean> => {
+    if (!isSupabaseConfigured) {
+      setSyncError("Supabase não configurado no .env.local.");
+      clearSyncFeedback();
+      return false;
+    }
+
+    setIsSyncing(true);
+    setSyncError(null);
+    try {
+      await portfolioService.syncAllProjects(projects);
+      setSyncSuccess(true);
+      clearSyncFeedback();
+      return true;
+    } catch (err: any) {
+      console.error("Erro ao sincronizar com o Supabase:", err);
+      const msg = err?.message || "Erro ao salvar no Supabase. Execute o script de RLS no Supabase.";
+      setSyncError(msg);
+      clearSyncFeedback();
+      return false;
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [projects, clearSyncFeedback]);
 
   // Autenticação
   const login = (password: string): boolean => {
@@ -177,12 +246,12 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   // ── PROJETOS ──
-  const addProject = (projectData: Omit<PortfolioProject, "id">) => {
-    const newId = (projectData.slug || projectData.name.toLowerCase().replace(/\s+/g, "-")) + "-" + Date.now();
+  const addProject = async (projectData: Omit<PortfolioProject, "id">): Promise<PortfolioProject> => {
+    const rawId = (projectData.slug || projectData.name.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-")) + "-" + Date.now();
     const newProject: PortfolioProject = {
       ...projectData,
-      id: newId,
-      slug: projectData.slug || newId,
+      id: rawId,
+      slug: projectData.slug || rawId,
       totalEditions: projectData.editions ? projectData.editions.length : 0,
       stats: projectData.stats || {
         totalAudience: "+5.000 pessoas",
@@ -191,10 +260,29 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
       },
       editions: projectData.editions || [],
     };
+
     setProjects((prev) => [newProject, ...prev]);
+
+    if (isSupabaseConfigured) {
+      setIsSyncing(true);
+      try {
+        await portfolioService.upsertProject(newProject);
+        setSyncSuccess(true);
+      } catch (err: any) {
+        console.error("Erro ao salvar projeto no Supabase:", err);
+        setSyncError(err?.message || "Erro ao salvar no Supabase.");
+      } finally {
+        setIsSyncing(false);
+        clearSyncFeedback();
+      }
+    }
+
+    return newProject;
   };
 
-  const updateProject = (id: string, projectData: Partial<PortfolioProject>) => {
+  const updateProject = async (id: string, projectData: Partial<PortfolioProject>) => {
+    let updatedProj: PortfolioProject | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== id) return p;
@@ -202,31 +290,72 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         if (updated.editions) {
           updated.totalEditions = updated.editions.length;
         }
+        updatedProj = updated;
         return updated;
       })
     );
+
+    if (isSupabaseConfigured && updatedProj) {
+      setIsSyncing(true);
+      try {
+        await portfolioService.upsertProject(updatedProj);
+        setSyncSuccess(true);
+      } catch (err: any) {
+        console.error("Erro ao atualizar projeto no Supabase:", err);
+        setSyncError(err?.message || "Erro ao salvar no Supabase.");
+      } finally {
+        setIsSyncing(false);
+        clearSyncFeedback();
+      }
+    }
   };
 
-  const deleteProject = (id: string) => {
+  const deleteProject = async (id: string) => {
     setProjects((prev) => prev.filter((p) => p.id !== id));
+
+    if (isSupabaseConfigured) {
+      setIsSyncing(true);
+      try {
+        await portfolioService.deleteProject(id);
+        setSyncSuccess(true);
+      } catch (err: any) {
+        console.error("Erro ao deletar projeto do Supabase:", err);
+        setSyncError(err?.message || "Erro ao deletar no Supabase.");
+      } finally {
+        setIsSyncing(false);
+        clearSyncFeedback();
+      }
+    }
   };
 
-  const toggleProjectVisibility = (id: string) => {
+  const toggleProjectVisibility = async (id: string) => {
+    let targetProject: PortfolioProject | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== id) return p;
         const currentPublished = p.isPublished !== false && p.status !== "draft";
-        return {
+        const updated: PortfolioProject = {
           ...p,
           isPublished: !currentPublished,
           status: !currentPublished ? "published" : "draft",
         };
+        targetProject = updated;
+        return updated;
       })
     );
+
+    if (isSupabaseConfigured && targetProject) {
+      try {
+        await portfolioService.upsertProject(targetProject);
+      } catch (err) {
+        console.error("Erro ao alternar visibilidade no Supabase:", err);
+      }
+    }
   };
 
   // ── EDIÇÕES ──
-  const addEdition = (projectId: string, editionData: Omit<ProjectEdition, "id">) => {
+  const addEdition = async (projectId: string, editionData: Omit<ProjectEdition, "id">): Promise<ProjectEdition> => {
     const newEditionId = `ed-${Date.now()}`;
     const newEdition: ProjectEdition = {
       ...editionData,
@@ -250,21 +379,60 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         };
       })
     );
+
+    if (isSupabaseConfigured) {
+      setIsSyncing(true);
+      try {
+        await portfolioService.upsertEdition(projectId, newEdition);
+        setSyncSuccess(true);
+      } catch (err: any) {
+        console.error("Erro ao adicionar edição no Supabase:", err);
+        setSyncError(err?.message || "Erro ao salvar edição no Supabase.");
+      } finally {
+        setIsSyncing(false);
+        clearSyncFeedback();
+      }
+    }
+
+    return newEdition;
   };
 
-  const updateEdition = (projectId: string, editionId: string, editionData: Partial<ProjectEdition>) => {
+  const updateEdition = async (projectId: string, editionId: string, editionData: Partial<ProjectEdition>) => {
+    let updatedEd: ProjectEdition | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== projectId) return p;
         return {
           ...p,
-          editions: p.editions.map((ed) => (ed.id === editionId ? { ...ed, ...editionData } : ed)),
+          editions: p.editions.map((ed) => {
+            if (ed.id === editionId) {
+              const u = { ...ed, ...editionData };
+              updatedEd = u;
+              return u;
+            }
+            return ed;
+          }),
         };
       })
     );
+
+    if (isSupabaseConfigured && updatedEd) {
+      setIsSyncing(true);
+      try {
+        await portfolioService.upsertEdition(projectId, updatedEd);
+        setSyncSuccess(true);
+      } catch (err: any) {
+        console.error("Erro ao atualizar edição no Supabase:", err);
+        setSyncError(err?.message || "Erro ao salvar edição no Supabase.");
+      } finally {
+        setIsSyncing(false);
+        clearSyncFeedback();
+      }
+    }
   };
 
-  const deleteEdition = (projectId: string, editionId: string) => {
+  const deleteEdition = async (projectId: string, editionId: string) => {
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== projectId) return p;
@@ -276,9 +444,25 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         };
       })
     );
+
+    if (isSupabaseConfigured) {
+      setIsSyncing(true);
+      try {
+        await portfolioService.deleteEdition(editionId);
+        setSyncSuccess(true);
+      } catch (err: any) {
+        console.error("Erro ao excluir edição no Supabase:", err);
+        setSyncError(err?.message || "Erro ao excluir edição no Supabase.");
+      } finally {
+        setIsSyncing(false);
+        clearSyncFeedback();
+      }
+    }
   };
 
-  const toggleEditionVisibility = (projectId: string, editionId: string) => {
+  const toggleEditionVisibility = async (projectId: string, editionId: string) => {
+    let targetEd: ProjectEdition | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== projectId) return p;
@@ -287,23 +471,33 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
           editions: p.editions.map((ed) => {
             if (ed.id !== editionId) return ed;
             const currentPublished = ed.isPublished !== false && ed.status !== "draft";
-            return {
+            const updated = {
               ...ed,
               isPublished: !currentPublished,
-              status: !currentPublished ? "published" : "draft",
+              status: !currentPublished ? ("published" as const) : ("draft" as const),
             };
+            targetEd = updated;
+            return updated;
           }),
         };
       })
     );
+
+    if (isSupabaseConfigured && targetEd) {
+      try {
+        await portfolioService.upsertEdition(projectId, targetEd);
+      } catch (err) {
+        console.error("Erro ao alternar visibilidade da edição no Supabase:", err);
+      }
+    }
   };
 
   // ── FOTOS DA EDIÇÃO ──
-  const addEditionPhoto = (
+  const addEditionPhoto = async (
     projectId: string,
     editionId: string,
     photoData: Omit<ProjectEditionPhoto, "id">
-  ) => {
+  ): Promise<ProjectEditionPhoto> => {
     const newPhoto: ProjectEditionPhoto = {
       ...photoData,
       id: `photo-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -324,9 +518,19 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         };
       })
     );
+
+    if (isSupabaseConfigured) {
+      try {
+        await portfolioService.upsertImage(editionId, newPhoto);
+      } catch (err) {
+        console.error("Erro ao adicionar foto no Supabase:", err);
+      }
+    }
+
+    return newPhoto;
   };
 
-  const deleteEditionPhoto = (projectId: string, editionId: string, photoId: string) => {
+  const deleteEditionPhoto = async (projectId: string, editionId: string, photoId: string) => {
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== projectId) return p;
@@ -342,6 +546,14 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         };
       })
     );
+
+    if (isSupabaseConfigured) {
+      try {
+        await portfolioService.deleteImage(photoId);
+      } catch (err) {
+        console.error("Erro ao deletar foto do Supabase:", err);
+      }
+    }
   };
 
   // ── FAQ ──
@@ -422,6 +634,11 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         changePassword,
+        isSyncing,
+        syncError,
+        syncSuccess,
+        syncToSupabase,
+        refreshFromSupabase,
         addProject,
         updateProject,
         deleteProject,
@@ -449,7 +666,6 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
 export function useSiteStore() {
   const context = useContext(SiteStoreContext);
   if (!context) {
-    // Fallback gracioso para SSR ou testes
     return {
       projects: initialProjects,
       faq: initialFaqItems,
@@ -458,16 +674,21 @@ export function useSiteStore() {
       login: () => false,
       logout: () => {},
       changePassword: () => {},
-      addProject: () => {},
-      updateProject: () => {},
-      deleteProject: () => {},
-      toggleProjectVisibility: () => {},
-      addEdition: () => {},
-      updateEdition: () => {},
-      deleteEdition: () => {},
-      toggleEditionVisibility: () => {},
-      addEditionPhoto: () => {},
-      deleteEditionPhoto: () => {},
+      isSyncing: false,
+      syncError: null,
+      syncSuccess: false,
+      syncToSupabase: async () => false,
+      refreshFromSupabase: async () => {},
+      addProject: async (p: any) => p,
+      updateProject: async () => {},
+      deleteProject: async () => {},
+      toggleProjectVisibility: async () => {},
+      addEdition: async (_: any, e: any) => e,
+      updateEdition: async () => {},
+      deleteEdition: async () => {},
+      toggleEditionVisibility: async () => {},
+      addEditionPhoto: async (_: any, __: any, ph: any) => ph,
+      deleteEditionPhoto: async () => {},
       addFaqItem: () => {},
       updateFaqItem: () => {},
       deleteFaqItem: () => {},

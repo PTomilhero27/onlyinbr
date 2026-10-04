@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/components/shared/lenis-provider";
 import { SiteStoreProvider } from "@/lib/store";
+import { ReactQueryProvider } from "@/lib/query-provider";
 import { StructuredData } from "@/lib/structured-data";
 import { Analytics } from "@vercel/analytics/next"
 
@@ -147,9 +148,11 @@ export default function RootLayout({
     >
       <body className="bg-white text-neutral-900 font-body antialiased">
         <StructuredData />
-        <SiteStoreProvider>
-          <LenisProvider>{children}</LenisProvider>
-        </SiteStoreProvider>
+        <ReactQueryProvider>
+          <SiteStoreProvider>
+            <LenisProvider>{children}</LenisProvider>
+          </SiteStoreProvider>
+        </ReactQueryProvider>
       </body>
       <Analytics />
     </html>

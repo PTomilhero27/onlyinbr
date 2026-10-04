@@ -32,6 +32,11 @@ export default function AdminPage() {
     login,
     logout,
     changePassword,
+    isSyncing,
+    syncError,
+    syncSuccess,
+    syncToSupabase,
+    refreshFromSupabase,
     addProject,
     updateProject,
     deleteProject,
@@ -135,15 +140,15 @@ export default function AdminPage() {
     setIsEditingProject(true);
   };
 
-  const handleSaveProject = () => {
+  const handleSaveProject = async () => {
     if (!projectFormData.name?.trim()) {
       showToast("Preencha ao menos o nome do projeto.");
       return;
     }
 
     if (isEditingProject && projectFormData.id) {
-      updateProject(projectFormData.id, projectFormData);
-      showToast("Projeto atualizado!");
+      await updateProject(projectFormData.id, projectFormData);
+      showToast("Projeto atualizado e sincronizado com o Supabase!");
     } else {
       const newId =
         projectFormData.slug ||
@@ -153,7 +158,7 @@ export default function AdminPage() {
           .replace(/\s+/g, "-") ||
         `proj-${Date.now()}`;
 
-      addProject({
+      await addProject({
         name: projectFormData.name,
         slug: newId,
         category: projectFormData.category || "feiras-gastronomicas",
@@ -190,7 +195,7 @@ export default function AdminPage() {
         ],
       });
       setSelectedProjectId(newId);
-      showToast("Novo projeto criado!");
+      showToast("Novo projeto salvo no Supabase!");
     }
 
     setIsAddingProject(false);
@@ -233,34 +238,35 @@ export default function AdminPage() {
     });
   };
 
-  const handleSaveEdition = (
+  const handleSaveEdition = async (
     projectId: string,
     edition: ProjectEdition,
     isNew?: boolean
   ) => {
     if (isNew) {
-      addEdition(projectId, edition);
-      showToast("Nova edição adicionada!");
+      await addEdition(projectId, edition);
+      showToast("Nova edição salva no Supabase!");
     } else {
-      updateEdition(projectId, edition.id, edition);
-      showToast("Edição atualizada!");
+      await updateEdition(projectId, edition.id, edition);
+      showToast("Edição atualizada no Supabase!");
     }
     setEditingEdition(null);
   };
 
   // Handlers de Fotos
-  const handleAddPhotos = (
+  const handleAddPhotos = async (
     projectId: string,
     editionId: string,
     photos: { url: string; caption?: string; alt?: string }[]
   ) => {
-    photos.forEach((photo) => {
-      addEditionPhoto(projectId, editionId, {
+    for (const photo of photos) {
+      await addEditionPhoto(projectId, editionId, {
         url: photo.url,
         caption: photo.caption,
         alt: photo.alt || "Foto da edição Only in BR",
       });
-    });
+    }
+    showToast(`${photos.length} foto(s) adicionada(s) e salvas no Supabase!`);
   };
 
   // Métricas
@@ -321,7 +327,26 @@ export default function AdminPage() {
         contact={contact}
         setContactForm={setContactForm}
         logout={logout}
+        isSyncing={isSyncing}
+        syncError={syncError}
+        syncSuccess={syncSuccess}
+        onSyncSupabase={syncToSupabase}
       />
+
+      {/* Alerta caso haja bloqueio de RLS no Supabase */}
+      {syncError && (
+        <div className="bg-rose-950/80 border-b border-rose-500/40 text-rose-200 text-xs px-5 py-2 flex items-center justify-between gap-4 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+            <span>
+              <strong>Atenção (Supabase):</strong> As alterações foram salvas localmente, mas o Supabase recusou o salvamento remoto (política RLS ativada).
+            </span>
+          </div>
+          <span className="text-[11px] text-rose-300/80">
+            Execute o script em <code>supabase/fix-rls.sql</code> no SQL Editor do Supabase.
+          </span>
+        </div>
+      )}
 
       {/* Conteúdo Dinâmico por Seção */}
       <main className="flex-1 min-h-0 p-3 sm:p-5 flex flex-col overflow-hidden">

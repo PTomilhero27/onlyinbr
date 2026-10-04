@@ -150,6 +150,9 @@ src/
 | Framer Motion | 13.x | Animações de interface e reveal |
 | Lenis | 1.x | Scroll suave |
 | Lucide React | latest | Biblioteca de ícones |
+| TanStack Query | 5.x | Server state management, cache e revalidação de dados remotos |
+| Ky | 2.x | Cliente HTTP moderno, resiliente e tipado para chamadas REST |
+| Zod | 4.x | Validação e tipagem estrita de schemas de dados de projetos e edições |
 
 ---
 
