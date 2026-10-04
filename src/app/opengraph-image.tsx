@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Only in BR — Produção de Eventos, Estrutura & Gestão de Staff";
+export const alt = "Only in BR — Produção de eventos em São Paulo, da ideia à execução";
 export const size = {
   width: 1200,
   height: 630,
@@ -108,26 +108,16 @@ export default async function Image() {
           <div
             style={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: "column",
               fontSize: 54,
               fontWeight: 900,
               color: "#ffffff",
               lineHeight: 1.12,
-              letterSpacing: "-0.03em",
+              gap: "8px",
             }}
           >
-            <span>O que a</span>
-            <span
-              style={{
-                color: "#38bdf8",
-                marginLeft: "12px",
-                marginRight: "12px",
-                textDecoration: "underline",
-              }}
-            >
-              Only in BR
-            </span>
-            <span>entrega para você.</span>
+              <span>Produção de eventos</span>
+              <span style={{ color: "#f5bd2c" }}>da ideia à execução.</span>
           </div>
 
           <div
@@ -140,7 +130,7 @@ export default async function Image() {
               maxWidth: "880px",
             }}
           >
-            Produção executiva, engenharia de palco 360°, som Line Array, painéis de LED, equipe de staff com alimentação e responsabilidade técnica com ART no CREA/SP.
+            Planejamento, estrutura, staff, alimentação, marketing e operação para eventos em São Paulo e região.
           </div>
         </div>
 

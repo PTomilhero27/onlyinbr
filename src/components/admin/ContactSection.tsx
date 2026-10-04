@@ -1,11 +1,12 @@
 "use client";
 
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { ExternalLink, MessageCircle, Phone, Save } from "lucide-react";
 import { type ContactConfig } from "@/lib/store";
 
 type ContactSectionProps = {
   contactForm: ContactConfig;
-  setContactForm: (value: ContactConfig) => void;
+  setContactForm: Dispatch<SetStateAction<ContactConfig>>;
   updateContact: (payload: ContactConfig) => void;
   showToast: (message: string) => void;
 };
@@ -16,6 +17,55 @@ export function ContactSection({
   updateContact,
   showToast,
 }: ContactSectionProps) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [settingsError, setSettingsError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetch("/api/admin/contact-settings", { signal: controller.signal })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Não foi possível carregar o e-mail.");
+        if (result.email) {
+          setContactForm((current) => ({ ...current, email: result.email }));
+        }
+        setSettingsError("");
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setSettingsError(error instanceof Error ? error.message : "Não foi possível carregar o e-mail de destino.");
+        }
+      });
+
+    return () => controller.abort();
+  }, [setContactForm]);
+
+  const handleSaveContact = async () => {
+    setIsSaving(true);
+    setSettingsError("");
+
+    try {
+      const response = await fetch("/api/admin/contact-settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: contactForm.email }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Não foi possível salvar o e-mail de destino.");
+      }
+
+      updateContact(contactForm);
+      showToast("E-mail de destino salvo no Supabase!");
+    } catch (error) {
+      setSettingsError(error instanceof Error ? error.message : "Não foi possível salvar as configurações.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
       <div className="md:col-span-7 rounded-[30px] border border-white/15 bg-[rgba(10,40,24,0.46)] p-6 backdrop-blur-xl shadow-[0_18px_45px_-28px_rgba(0,0,0,0.9)] space-y-4">
@@ -61,12 +111,12 @@ export function ContactSection({
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-neutral-300 mb-1">E-mail oficial</label>
+              <label className="block text-[11px] font-semibold text-neutral-300 mb-1">E-mail que recebe os briefings</label>
               <input
                 type="email"
                 value={contactForm.email}
                 onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                placeholder="contato@onlyinbr.com.br"
+                placeholder="eventos@onlyinbr.com.br"
                 className="w-full px-3 py-2 rounded-xl bg-[#0b2b1c]/80 border border-white/10 text-white text-xs focus:border-brand-yellow/60 focus:outline-none"
               />
             </div>
@@ -88,16 +138,21 @@ export function ContactSection({
           </div>
         </div>
 
+        {settingsError && (
+          <p role="alert" className="text-xs leading-relaxed text-rose-200" aria-live="polite">
+            {settingsError}
+          </p>
+        )}
+
         <div className="pt-2 flex justify-end">
           <button
-            onClick={() => {
-              updateContact(contactForm);
-              showToast("WhatsApp salvo com sucesso!");
-            }}
+            type="button"
+            onClick={handleSaveContact}
+            disabled={isSaving}
             className="px-5 py-2.5 rounded-xl bg-brand-yellow text-neutral-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer font-heading shadow-[0_16px_32px_-16px_rgba(245,189,44,0.95)]"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>Salvar Dados</span>
+            <span>{isSaving ? "Salvando..." : "Salvar Dados"}</span>
           </button>
         </div>
       </div>

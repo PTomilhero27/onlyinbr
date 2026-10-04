@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   Briefcase,
   CalendarDays,
@@ -15,8 +16,11 @@ import {
   Megaphone,
   Check,
   Sparkles,
+  UtensilsCrossed,
+  Workflow,
+  ArrowRight,
 } from "lucide-react";
-import { serviceSections, type ServiceSection } from "@/data/services";
+import { homeSolutions, serviceSections, type ServiceSection } from "@/data/services";
 import { WhatsAppCTA } from "@/components/shared/whatsapp-cta";
 import { defaultViewport } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -33,6 +37,8 @@ const iconMap: Record<string, React.ElementType> = {
   Award,
   Palette,
   Megaphone,
+  UtensilsCrossed,
+  Workflow,
 };
 
 const sectionTheme = {
@@ -73,6 +79,62 @@ const sectionTheme = {
 export function Services() {
   return (
     <div id="servicos" className="relative">
+      <section
+        id="solucoes"
+        className="relative py-16 sm:py-20 border-b border-white/[0.08]"
+        aria-labelledby="solutions-title"
+      >
+        <div className="container-site relative z-10 w-full px-4 sm:px-8 md:px-12 lg:px-16">
+          <div className="max-w-3xl mb-8 sm:mb-10">
+            <p className="text-xs uppercase tracking-[0.16em] font-bold text-brand-yellow mb-2">
+              Da ideia à operação
+            </p>
+            <h2
+              id="solutions-title"
+              className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-white leading-tight"
+            >
+              Tudo para o seu evento acontecer.
+            </h2>
+            <p className="text-sm sm:text-base text-neutral-300 leading-relaxed mt-3 max-w-2xl">
+              Você pensa no evento. A Only in BR conecta produção, estrutura, equipes, alimentação e
+              divulgação em um plano alinhado ao seu projeto.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {homeSolutions.map((solution) => {
+              const Icon = iconMap[solution.iconName] || Layers;
+
+              return (
+                <Link
+                  key={solution.title}
+                  href={solution.href}
+                  className="group liquid-glass-card p-5 sm:p-6 rounded-2xl border border-white/10 hover:border-brand-yellow/40 transition-colors focus-visible:outline-2 focus-visible:outline-brand-yellow"
+                >
+                  <div className="flex items-start gap-3.5">
+                    <span className="w-10 h-10 rounded-xl bg-brand-yellow/10 border border-brand-yellow/25 text-brand-yellow flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-heading font-bold text-white leading-snug group-hover:text-brand-yellow transition-colors">
+                        {solution.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed mt-1.5">
+                        {solution.description}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-brand-yellow">
+                    Conheça a solução
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {serviceSections.map((service, index) => {
         const theme = sectionTheme[service.accentColor] || sectionTheme.yellow;
 
@@ -107,12 +169,12 @@ export function Services() {
                 <div className="lg:col-span-6 flex flex-col justify-between space-y-2.5 lg:pr-2">
                   {/* Título & Subtítulo */}
                   <div>
-                    <h3
+                    <h2
                       id={`service-title-${service.id}`}
                       className="text-2xl sm:text-3xl lg:text-[2.2rem] font-heading font-bold text-white mb-2 leading-[1.15] tracking-tight"
                     >
                       {service.title}
-                    </h3>
+                    </h2>
                     <p className={cn("text-xs sm:text-[0.82rem] font-medium leading-normal mb-2", theme.accentText)}>
                       {service.tagline}
                     </p>
@@ -131,9 +193,9 @@ export function Services() {
                   {/* Bloco Manifesto / Citação Lateral */}
                   {service.closingTitle && (
                     <div className={cn("pl-3 border-l-2 py-0 space-y-0.5 my-0.5", theme.quoteBorder)}>
-                      <h4 className="text-xs sm:text-sm font-heading font-bold text-white leading-tight">
+                      <h3 className="text-xs sm:text-sm font-heading font-bold text-white leading-tight">
                         {service.closingTitle}
-                      </h4>
+                      </h3>
                       <p className="text-neutral-300 text-[10.5px] sm:text-[11px] leading-normal">
                         {service.closingText}
                       </p>
@@ -184,9 +246,9 @@ export function Services() {
                             <Icon className="w-3.5 h-3.5" />
                           </div>
                           <div>
-                            <h4 className="text-sm sm:text-base font-heading font-bold text-white leading-tight">
+                            <h3 className="text-sm sm:text-base font-heading font-bold text-white leading-tight">
                               {h.title}
-                            </h4>
+                            </h3>
                             {h.description && (
                               <p className="text-[11px] sm:text-xs text-neutral-400 mt-0.5">
                                 {h.description}

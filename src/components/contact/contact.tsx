@@ -30,7 +30,9 @@ const initialForm: FormData = {
 
 export function Contact() {
   const [form, setForm] = useState<FormData>(initialForm);
-  const [submitted, setSubmitted] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<{ emailSent: boolean } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -40,11 +42,33 @@ export function Contact() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted:", form);
-    setSubmitted(true);
-    setForm(initialForm);
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    const website = new FormData(e.currentTarget).get("website")?.toString() || "";
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, website }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        setSubmitError(result.error || "Não foi possível enviar seu briefing. Tente novamente.");
+        return;
+      }
+
+      setSubmissionResult({ emailSent: Boolean(result.emailSent) });
+      setForm(initialForm);
+    } catch {
+      setSubmitError("Não foi possível conectar ao servidor. Seus dados ainda não foram enviados.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -72,7 +96,7 @@ export function Contact() {
               id="contact-title"
               className="text-3xl sm:text-5xl lg:text-6xl font-heading font-bold leading-[1.08] tracking-tight text-white mb-4"
             >
-              Vamos criar{" "}
+              Vamos produzir{" "}
               <span
                 className="relative inline-block text-brand-yellow"
                 style={{
@@ -81,7 +105,7 @@ export function Contact() {
                   WebkitTextStroke: "0.4px currentColor",
                 }}
               >
-                algo único?
+                o seu evento?
                 <motion.svg
                   initial={{ pathLength: 0, opacity: 0 }}
                   whileInView={{ pathLength: 1, opacity: 1 }}
@@ -98,7 +122,7 @@ export function Contact() {
             </h2>
 
             <p className="text-neutral-200 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto leading-relaxed font-normal">
-              Da estrutura pesada à responsabilidade técnica com ART, da equipe de staff à cobertura de mídia. Converse diretamente com nossos especialistas no WhatsApp e tenha uma operação sem imprevistos.
+              Da estrutura à operação, do staff à alimentação, cuidamos dos detalhes para transformar seu projeto em uma experiência completa.
             </p>
           </motion.div>
 
@@ -130,7 +154,7 @@ export function Contact() {
             </span>
           </div>
 
-          {submitted ? (
+          {submissionResult ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -139,13 +163,15 @@ export function Contact() {
             >
               <CheckCircle2 className="w-10 h-10 text-brand-yellow mx-auto mb-2" />
               <p className="text-white font-heading font-bold text-xl mb-1">
-                Mensagem recebida com sucesso!
+                {submissionResult.emailSent ? "Briefing enviado com sucesso!" : "Briefing registrado"}
               </p>
               <p className="text-neutral-300 text-sm font-normal">
-                Em breve nossa equipe técnica entrará em contato com você.
+                {submissionResult.emailSent
+                  ? "Seus dados foram salvos e enviados para nossa equipe. Em breve entraremos em contato."
+                  : "Seus dados foram salvos no banco, mas a notificação por e-mail não foi concluída. Entre em contato pelo WhatsApp para agilizar o atendimento."}
               </p>
               <button
-                onClick={() => setSubmitted(false)}
+                onClick={() => setSubmissionResult(null)}
                 className="mt-4 text-xs text-brand-yellow hover:text-white font-bold underline transition-colors cursor-pointer"
               >
                 Enviar outro briefing
@@ -155,8 +181,17 @@ export function Contact() {
             <form
               onSubmit={handleSubmit}
               aria-label="Formulário de contato"
-              className="space-y-4 p-6 sm:p-8 bg-gradient-to-b from-emerald-950/40 via-emerald-950/20 to-black/30 backdrop-blur-md rounded-3xl border border-emerald-500/20 shadow-2xl"
+              className="relative space-y-4 p-6 sm:p-8 bg-gradient-to-b from-emerald-950/40 via-emerald-950/20 to-black/30 backdrop-blur-md rounded-3xl border border-emerald-500/20 shadow-2xl"
             >
+              <div className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+                <Label htmlFor="contact-website">Website</Label>
+                <Input id="contact-website" name="website" tabIndex={-1} autoComplete="off" />
+              </div>
+              {submitError && (
+                <p role="alert" aria-live="polite" className="text-sm text-rose-200">
+                  {submitError}
+                </p>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="space-y-1">
                   <Label htmlFor="contact-name" className="text-neutral-200 text-xs font-semibold">
@@ -261,10 +296,11 @@ export function Contact() {
 
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="w-full flex items-center justify-center gap-2 bg-brand-yellow hover:bg-brand-yellow-dark text-neutral-950 font-bold rounded-xl py-3 px-6 transition-all duration-200 shadow-xl cursor-pointer text-sm sm:text-base hover:scale-[1.01]"
               >
                 <Send className="w-4 h-4" aria-hidden="true" />
-                Enviar Briefing Técnico
+                {isSubmitting ? "Enviando briefing..." : "Enviar Briefing Técnico"}
               </button>
             </form>
           )}

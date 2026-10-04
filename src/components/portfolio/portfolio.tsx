@@ -57,6 +57,10 @@ export function Portfolio() {
         totalEditions: activeEditions.length,
       };
     });
+  const publishedEditionCount = publishedProjects.reduce(
+    (total, project) => total + project.editions.length,
+    0
+  );
 
   // Categorias dinâmicas geradas EXCLUSIVAMENTE dos projetos ativos e publicados
   const dynamicCategories = [
@@ -171,9 +175,9 @@ export function Portfolio() {
               </span>
             </h2>
             <p className="text-neutral-300 text-sm sm:text-base max-w-2xl leading-relaxed">
-              Explore nossos projetos autorais e festivais. Clique em qualquer projeto para navegar
-              pelas <strong>múltiplas edições realizadas</strong>, histórico de público, infraestrutura
-              técnica e galerias exclusivas de fotos.
+              Cada formato pede uma produção própria: feiras gastronômicas, festivais e eventos corporativos
+              têm necessidades diferentes. Aqui você encontra os projetos cadastrados e os detalhes
+              disponíveis em cada registro, sem antecipar resultados que ainda não foram publicados.
             </p>
           </div>
 
@@ -356,7 +360,7 @@ export function Portfolio() {
             </div>
             <div>
               <span className="text-2xl sm:text-3xl font-sans font-black text-brand-yellow tracking-tight leading-none block mb-1">
-                +15
+                +{publishedEditionCount}
               </span>
               <span className="text-xs sm:text-sm text-neutral-300 font-medium leading-snug block">
                 Edições autorais produzidas

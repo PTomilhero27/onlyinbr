@@ -102,15 +102,39 @@ export default function AdminPage() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = login(passwordInput);
+    const password = passwordInput;
+    const ok = login(password);
     if (!ok) {
       setLoginError(true);
       setTimeout(() => setLoginError(false), 2000);
     } else {
+      try {
+        const response = await fetch("/api/admin/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
+
+        if (!response.ok) {
+          const result = await response.json();
+          showToast(result.error || "O painel entrou, mas a integração server-side ainda não está ativa.");
+        }
+      } catch {
+        showToast("O painel entrou, mas não foi possível iniciar a sessão segura do servidor.");
+      }
+
       setPasswordInput("");
       setLoginError(false);
+    }
+  };
+
+  const handleAdminLogout = async () => {
+    try {
+      await fetch("/api/admin/session", { method: "DELETE" });
+    } finally {
+      logout();
     }
   };
 
@@ -326,7 +350,7 @@ export default function AdminPage() {
         faqCount={faq.length}
         contact={contact}
         setContactForm={setContactForm}
-        logout={logout}
+        logout={handleAdminLogout}
         isSyncing={isSyncing}
         syncError={syncError}
         syncSuccess={syncSuccess}

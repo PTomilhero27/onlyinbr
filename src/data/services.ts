@@ -27,6 +27,52 @@ export type ServiceSection = {
   accentColor: "yellow" | "green" | "blue" | "emerald";
 };
 
+export type HomeSolution = {
+  title: string;
+  description: string;
+  href: string;
+  iconName: string;
+};
+
+export const homeSolutions: HomeSolution[] = [
+  {
+    title: "Produção de Eventos",
+    description: "Planejamento, produção executiva, coordenação e operação completa.",
+    href: "#producao-corporativa-staff",
+    iconName: "CalendarDays",
+  },
+  {
+    title: "Estrutura e Equipamentos",
+    description: "Palcos, tendas, som, iluminação, painéis de LED e energia.",
+    href: "#estrutura-locacao",
+    iconName: "Layers",
+  },
+  {
+    title: "Staff e Operação",
+    description: "Equipes preparadas para recepção, apoio, produção e operação.",
+    href: "#producao-corporativa-staff",
+    iconName: "Users",
+  },
+  {
+    title: "Alimentação para Eventos",
+    description: "Refeições para equipes e marmitas sob demanda, conforme cada projeto.",
+    href: "#alimentacao-eventos",
+    iconName: "UtensilsCrossed",
+  },
+  {
+    title: "Marketing para Eventos",
+    description: "Comunicação e divulgação para aproximar o evento do público.",
+    href: "#design-marketing-influencia",
+    iconName: "Megaphone",
+  },
+  {
+    title: "Gestão e Operação",
+    description: "Fornecedores, cronogramas, logística e execução coordenados.",
+    href: "#producao-corporativa-staff",
+    iconName: "Workflow",
+  },
+];
+
 export const serviceSections: ServiceSection[] = [
   // ── SEÇÃO 01: PRODUÇÃO DE EVENTOS E GESTÃO DE STAFF ──
   {
@@ -34,11 +80,11 @@ export const serviceSections: ServiceSection[] = [
     number: "01",
     badge: "",
     title: "Produção de Eventos e Gestão de Staff",
-    tagline: "Grandes eventos exigem mais do que fornecedores. Exigem coordenação, experiência e controle em cada detalhe.",
-    headline: "Assumimos a operação de ponta a ponta — do planejamento à execução — integrando fornecedores, equipes, logística, alimentação, recepção e infraestrutura para que sua liderança tenha previsibilidade, segurança e tranquilidade durante todo o projeto.",
-    description: "Você define o objetivo. Nós transformamos a estratégia em uma operação que acontece.",
+    tagline: "Produção completa, coordenação e experiência em cada etapa do evento.",
+    headline: "Mais do que disponibilizar mão de obra, assumimos a produção executiva e coordenamos a operação do evento do planejamento à execução, conforme o escopo de cada projeto.",
+    description: "Você pensa no evento. A Only in BR organiza fornecedores, estrutura e gestão de equipes para fazer a operação acontecer.",
     closingTitle: "Uma operação. Um responsável. Zero improviso.",
-    closingText: "Centralizamos a gestão para reduzir a complexidade e eliminar pontos de atrito entre equipes e fornecedores. Tudo para que seu time interno possa se concentrar no que realmente importa: o negócio, os convidados e a experiência que sua marca deseja entregar.",
+    closingText: "A produção completa conecta cronogramas, fornecedores e gestão de equipes em uma operação coordenada. Sua equipe pode se concentrar nos convidados e na experiência que deseja proporcionar.",
     highlights: [
       {
         title: "Convenções, Feiras & Lançamentos",
@@ -79,8 +125,8 @@ export const serviceSections: ServiceSection[] = [
     badge: "",
     title: "Eventos para Igrejas",
     tagline: "Estrutura completa, segurança e organização para sua comunidade celebrar com tranquilidade.",
-    headline: "Quermesses, festas juninas, arraiás, festas de padroeiro e grandes celebrações comunitárias exigem muito mais do que boa vontade.",
-    description: "A Only in BR assume a estrutura e a operação para que a paróquia, os voluntários e a comissão organizadora possam concentrar seus esforços no que realmente importa: acolher a comunidade e fazer a celebração acontecer. Do planejamento à desmontagem, cuidamos da infraestrutura, energia, montagem, equipes de apoio, segurança e documentação necessária para uma operação organizada, segura e preparada para receber grandes públicos.",
+    headline: "Quermesses, festas juninas, festas de padroeiro e celebrações comunitárias precisam de organização, estrutura e uma operação preparada.",
+    description: "A Only in BR apoia a produção de eventos para igrejas do planejamento à desmontagem. Coordenamos estrutura, alimentação, segurança, equipes e documentação conforme o local e as necessidades de cada comunidade.",
     closingTitle: "Tradição preservada. Operação profissional. Arrecadação organizada.",
     closingText: "Respeitamos a identidade e a tradição de cada comunidade enquanto profissionalizamos aquilo que normalmente gera mais trabalho para os organizadores. Mais estrutura para a festa. Mais tranquilidade para a organização. Mais potencial para arrecadar.",
     highlights: [
@@ -136,8 +182,8 @@ export const serviceSections: ServiceSection[] = [
     badge: "",
     title: "Estrutura e Locação de Equipamentos",
     tagline: "Engenharia, tecnologia e operação técnica para eventos que exigem performance.",
-    headline: "Um grande evento começa por uma infraestrutura que não pode falhar.",
-    description: "A Only in BR entrega soluções completas de palco, estruturas, audiovisual, iluminação e energia, dimensionadas de acordo com o espaço, público e necessidade técnica de cada projeto. Do primeiro levantamento à operação durante o evento, nossa equipe cuida da montagem, testes, operação e desmontagem para garantir segurança, estabilidade e qualidade em cada detalhe.",
+    headline: "A estrutura para eventos precisa acompanhar o formato, o público e a produção de cada projeto.",
+    description: "Como parte da produção de eventos, planejamos palco, estruturas, audiovisual, iluminação e energia de acordo com o espaço e a necessidade técnica. A equipe acompanha montagem, testes, operação e desmontagem conforme o escopo contratado.",
     closingTitle: "Estrutura robusta. Tecnologia de alto desempenho. Operação especializada.",
     closingText: "Não entregamos apenas equipamentos. Entregamos uma estrutura pronta para funcionar. Palcos, Box Truss, LED, sonorização, iluminação e energia integrados em uma única operação, com equipe técnica preparada para acompanhar o evento do início ao fim.",
     closingHighlight: "Você pensa no evento. Nós fazemos a estrutura acontecer. Solicite um projeto técnico e orçamento para o seu evento.",
@@ -185,6 +231,45 @@ export const serviceSections: ServiceSection[] = [
     ctaLabel: "Solicitar Orçamento de Estrutura",
     ctaContext: "estrutura",
     accentColor: "yellow",
+  },
+
+  // ── ALIMENTAÇÃO PARA EVENTOS ──
+  {
+    id: "alimentacao-eventos",
+    number: "04",
+    badge: "",
+    title: "Alimentação para Eventos sob Demanda",
+    tagline: "Refeições planejadas para pessoas, equipes e operações de eventos.",
+    headline: "Seu evento também precisa alimentar pessoas, equipes e operações.",
+    description: "Oferecemos soluções de alimentação e marmitas sob demanda conforme a quantidade, os turnos e a logística de cada projeto. Consulte disponibilidade e condições para eventos corporativos e outras operações.",
+    closingTitle: "Alimentação alinhada à rotina do evento.",
+    closingText: "Com data, local, volume estimado e horários, avaliamos a demanda e organizamos o fornecimento de refeições para participantes e equipes.",
+    highlights: [
+      {
+        title: "Marmitas sob demanda",
+        description: "Fornecimento consultado conforme a necessidade de cada evento.",
+        items: [
+          "Marmitas para eventos e refeições em quantidade",
+          "Consulta de disponibilidade, volume e logística",
+          "Planejamento de entrega de acordo com o local e os horários",
+        ],
+        iconName: "Users",
+      },
+      {
+        title: "Alimentação para equipes",
+        description: "Apoio alimentar pensado junto com a operação e os turnos.",
+        items: [
+          "Alimentação para equipes de produção e staff",
+          "Refeições para eventos corporativos",
+          "Alinhamento de quantidades e horários por operação",
+        ],
+        iconName: "CalendarDays",
+      },
+    ],
+    audience: ["Eventos Corporativos", "Equipes de Produção", "Staff & Operação", "Eventos sob Demanda"],
+    ctaLabel: "Consultar Alimentação para Eventos",
+    ctaContext: "marmitas",
+    accentColor: "green",
   },
 
   // ── SEÇÃO 04: DOCUMENTAÇÃO E ALVARÁ PARA EVENTOS TEMPORÁRIOS ──
@@ -249,38 +334,30 @@ export const serviceSections: ServiceSection[] = [
     id: "design-marketing-influencia",
     number: "05",
     badge: "",
-    title: "Design para Eventos & Marketing de Influência",
-    tagline: "Transformamos eventos em marcas que despertam interesse, geram desejo e atraem público.",
-    headline: "Um evento começa muito antes da abertura dos portões. Começa na primeira imagem, no primeiro vídeo, no primeiro convite e na percepção que o público cria sobre aquela experiência.",
-    description: "A Only in BR une direção criativa, identidade visual e estratégia de divulgação para construir uma comunicação consistente em todos os pontos de contato — das redes sociais ao palco, do ingresso à experiência presencial.",
-    closingTitle: "Do primeiro impacto ao público presente.",
-    closingText: "Criamos uma identidade que faz o evento ser reconhecido e uma estratégia de comunicação pensada para atrair atenção, gerar interesse e fortalecer a presença da marca. Uma estratégia bem construída transforma o evento em conteúdo, relacionamento e ativo de marca.",
+    title: "Marketing para Eventos",
+    tagline: "Produzir o evento é uma parte. Fazer o público chegar até ele também exige comunicação.",
+    headline: "A Only in BR ajuda a planejar a divulgação e a comunicação do evento, aproximando a proposta do público que se deseja alcançar.",
+    description: "Conteúdo, identidade e ações nas redes sociais são organizados de acordo com o formato e os objetivos de cada produção.",
+    closingTitle: "Do planejamento à divulgação.",
+    closingText: "A comunicação começa com uma mensagem clara e canais adequados. O escopo pode incluir identidade visual, conteúdo, divulgação e cobertura, sem promessas de público ou vendas garantidas.",
     highlights: [
       {
         title: "Identidade Visual & Experiência de Marca",
-        description: "Seu evento precisa ser reconhecido antes mesmo de começar.",
+        description: "Uma identidade coerente ajuda o público a reconhecer a proposta do evento.",
         items: [
-          "Criação de identidade visual e conceito criativo",
-          "Direção visual alinhada ao posicionamento do evento",
-          "Artes para redes sociais: feed, stories e campanhas",
-          "Materiais impressos: cartazes, flyers, ingressos e credenciais",
-          "Conteúdos audiovisuais e motion graphics",
-          "Conteúdo para telões, painéis de LED e comunicação local",
-          "Padronização visual de todos os pontos de contato",
+          "Identidade visual e peças para redes sociais",
+          "Conteúdo e informações para divulgar o evento",
+          "Materiais de comunicação alinhados à experiência",
         ],
         iconName: "Palette",
       },
       {
         title: "Marketing de Influência & Cobertura",
-        description: "Levamos o evento para além do espaço físico.",
+        description: "Ações para comunicar o evento antes, durante e depois da realização.",
         items: [
-          "Divulgação por canais parceiros e influenciadores",
-          "Parceria de mídia exclusiva com a página @botecagemsp",
-          "Cobertura presencial e conteúdo em tempo real",
-          "Conteúdo para gerar expectativa antes do evento",
-          "Ações de divulgação para diferentes fases da venda",
-          "Ativação de marcas e patrocinadores",
-          "Conteúdo pós-evento para ampliar o alcance",
+          "Planejamento de divulgação e conteúdo para redes sociais",
+          "Ações de comunicação e atração de público conforme o projeto",
+          "Possibilidade de parceria e cobertura com @botecagemsp, sob alinhamento",
         ],
         iconName: "Megaphone",
       },

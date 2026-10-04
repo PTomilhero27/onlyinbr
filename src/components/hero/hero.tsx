@@ -99,12 +99,12 @@ export function Hero() {
             variants={textVariants}
             className="text-[1.85rem] sm:text-4xl md:text-5xl lg:text-[3.15rem] font-heading font-bold leading-[1.12] tracking-tight text-white mb-3 sm:mb-4 drop-shadow-md text-left"
           >
-            O que a{" "}
+            Produção de{" "}
             <span
               className="relative inline-block"
               style={{ color: "#38bdf8", fontFamily: "var(--font-brasilero)", fontWeight: 700, WebkitTextStroke: "0.4px #38bdf8" }}
             >
-              Only in BR
+              eventos
               <motion.svg
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
@@ -119,7 +119,7 @@ export function Hero() {
               </motion.svg>
             </span>
             <br />
-            entrega para você.
+            da ideia à execução.
           </motion.h1>
 
           {/* Subtítulo direto e chamativo */}
@@ -127,28 +127,28 @@ export function Hero() {
             variants={textVariants}
             className="text-sm sm:text-base md:text-lg text-neutral-200 leading-relaxed mb-5 sm:mb-7 max-w-xl font-normal drop-shadow-xs text-left"
           >
-            <b>Produção de eventos em São Paulo e região.</b> Estrutura, tecnologia e operação especializada para transformar projetos em experiências completas, seguras e memoráveis.
+            <b>Produção de eventos em São Paulo e região para empresas, igrejas e produtores.</b> A Only in BR cuida do planejamento, da estrutura, das equipes e da operação para transformar sua ideia em uma experiência completa.
 
           </motion.p>
 
           {/* CTAs de Conversão — Altura idêntica e sem quebras estranhas */}
           <motion.div
             variants={textVariants}
-            className="flex flex-row gap-2.5 sm:gap-3 items-center mb-5 sm:mb-6 w-full sm:w-auto"
+            className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center mb-5 sm:mb-6 w-full sm:w-auto"
           >
             <WhatsAppCTA
               context="hero"
-              label="WhatsApp"
+              label="Produza meu evento"
               variant="secondary"
               size="md"
-              className="bg-brand-green hover:bg-brand-green-dark text-white shadow-xl shadow-brand-green/30 font-bold hover:scale-[1.02] transition-all h-12 sm:h-14 px-5 sm:px-7 border border-emerald-400/30 justify-center items-center text-center text-sm sm:text-base whitespace-nowrap flex-1 sm:flex-initial"
+              className="bg-brand-green hover:bg-brand-green-dark text-white shadow-xl shadow-brand-green/30 font-bold hover:scale-[1.02] transition-all h-12 sm:h-14 px-5 sm:px-7 border border-emerald-400/30 justify-center items-center text-center text-sm sm:text-base whitespace-nowrap w-full sm:w-auto"
             />
             <Link
-              href="#servicos"
-              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base font-bold text-neutral-950 bg-brand-yellow hover:bg-brand-yellow-dark rounded-full h-12 sm:h-14 px-5 sm:px-7 transition-all duration-200 shadow-xl shadow-brand-yellow/20 text-center whitespace-nowrap flex-1 sm:flex-initial"
-              aria-label="Ver serviços da Only in BR"
+              href="#contato"
+              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 text-sm sm:text-base font-bold text-neutral-950 bg-brand-yellow hover:bg-brand-yellow-dark rounded-full h-12 sm:h-14 px-5 sm:px-7 transition-all duration-200 shadow-xl shadow-brand-yellow/20 text-center whitespace-nowrap w-full sm:w-auto"
+              aria-label="Falar com um especialista da Only in BR"
             >
-              Ver Serviços
+              Falar com especialista
             </Link>
           </motion.div>
 

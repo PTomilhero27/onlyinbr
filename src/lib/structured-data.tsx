@@ -68,7 +68,15 @@ export function getOrganizationSchema() {
     },
     knowsAbout: [
       "Produção de eventos",
+      "Produção executiva de eventos",
+      "Organização de eventos",
       "Eventos corporativos",
+      "Estrutura para eventos",
+      "Gestão de equipes e operação de eventos",
+      "Alimentação para eventos",
+      "Marmitas para eventos sob demanda",
+      "Marketing e divulgação de eventos",
+      "Feiras gastronômicas e festivais",
       "Quermesse para igrejas",
       "Locação de palco e som",
       "Painel de LED para eventos",
@@ -109,9 +117,9 @@ export function getWebPageSchema() {
     "@type": "WebPage",
     "@id": `${BASE_URL}/#webpage`,
     url: BASE_URL,
-    name: "Only in BR — Produção de Eventos, Estrutura & Gestão de Staff em São Paulo",
+    name: "Produção de Eventos em São Paulo | Only in BR",
     description:
-      "Produção executiva de eventos corporativos e comunitários em São Paulo e região. Palcos 360°, box truss, som Line Array, painéis de LED, alimentação de staff, laudos com ART no CREA/SP e alvará para evento temporário.",
+      "Produção de eventos em São Paulo e região com planejamento, estrutura, staff, alimentação, marketing e operação. A Only in BR transforma sua ideia em evento.",
     isPartOf: {
       "@id": `${BASE_URL}/#website`,
     },
@@ -130,9 +138,9 @@ export function getWebPageSchema() {
 export function getServicesSchema() {
   const services = [
     {
-      name: "Produção de Eventos Corporativos e Gestão de Staff",
+      name: "Produção Completa de Eventos e Gestão de Equipes",
       description:
-        "Produção executiva 360° para convenções, feiras, lançamentos, confraternizações — incluindo gestão de fornecedores, equipe de staff, alimentação, credenciamento e logística.",
+        "Produção executiva e coordenação de fornecedores, equipes, cronogramas e operação para eventos corporativos, culturais e institucionais.",
     },
     {
       name: "Produção de Festas e Eventos para Igrejas e Comunidades",
@@ -145,6 +153,11 @@ export function getServicesSchema() {
         "Palco 360°, box truss Q30/Q15, som Line Array profissional, painéis de LED, iluminação cênica, geradores e tendas cobertas.",
     },
     {
+      name: "Alimentação e Marmitas sob Demanda para Eventos",
+      description:
+        "Soluções de alimentação e refeições para equipes e eventos, planejadas conforme quantidade, turnos, local e disponibilidade.",
+    },
+    {
       name: "Documentação e Alvará para Evento Temporário",
       description:
         "Responsabilidade técnica com ART emitida no CREA/SP, laudos estruturais, licenciamento junto ao Corpo de Bombeiros, CET e COVISA.",
@@ -155,9 +168,9 @@ export function getServicesSchema() {
         "Criação de identidade visual, artes para redes sociais, ingressos, sinalização, banners, conteúdo para painéis de LED e comunicação visual integrada.",
     },
     {
-      name: "Marketing de Influência e Divulgação de Eventos",
+      name: "Marketing e Divulgação para Eventos",
       description:
-        "Divulgação pela página @botecagemsp, cobertura de eventos, ativação de marca, stories, reels e conteúdo UGC para engajamento orgânico.",
+        "Identidade visual, conteúdo e divulgação de eventos em canais adequados ao público e aos objetivos de cada projeto.",
     },
   ];
 

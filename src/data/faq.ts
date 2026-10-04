@@ -13,44 +13,62 @@ export type FaqItem = {
 export const faqItems: FaqItem[] = [
   {
     id: "o-que-entrega",
-    question: "O que a Only in BR entrega para o meu evento?",
+    question: "O que a Only in BR oferece para um evento?",
     answer:
-      "Assumimos a operação completa ou modular: produção executiva 360°, montagem de palcos (inclusive 360°), box truss, som Line Array, painéis de LED, iluminação cênica, geradores silenciados, equipe de staff com logística de alimentação, documentação com alvará e ART no CREA/SP, e divulgação com @botecagemsp.",
+      "A Only in BR pode coordenar produção, planejamento, estrutura, equipes, operação, alimentação e comunicação. O escopo é definido conforme o formato, o local e as necessidades de cada projeto.",
   },
   {
-    id: "como-contratar",
-    question: "Como funciona a contratação e prazos de atendimento?",
+    id: "producao-completa",
+    question: "Vocês fazem produção completa de eventos?",
     answer:
-      "O atendimento é iniciado diretamente pelo WhatsApp. Analisamos o briefing do seu evento, realizamos visita técnica quando necessário e emitimos uma proposta comercial detalhada e transparente. Atendemos eventos planejados e operações emergenciais com agilidade.",
+      "Sim. Podemos integrar produção executiva, cronograma, fornecedores, equipes, estrutura e acompanhamento operacional. Após entender o projeto, definimos com você as etapas e entregas incluídas na proposta.",
   },
   {
-    id: "nota-fiscal-art",
-    question: "A Only in BR emite Nota Fiscal e laudos com ART no CREA/SP?",
+    id: "corporativos",
+    question: "Vocês trabalham com eventos corporativos?",
     answer:
-      "Sim. Somos uma empresa formalizada (CNPJ 65.112.374/0001-44). Emitimos contrato formal, Nota Fiscal de serviços e Anotação de Responsabilidade Técnica (ART) no CREA/SP assinada por engenheiros legalmente habilitados para palcos, geradores e instalações elétricas.",
+      "Sim. Atendemos convenções, feiras, lançamentos, confraternizações e eventos institucionais, com soluções dimensionadas para o objetivo e a operação de cada empresa.",
   },
   {
     id: "festas-igrejas",
-    question: "Como funciona o atendimento para Igrejas e Quermesses?",
+    question: "Como funciona a produção de eventos para igrejas?",
     answer:
-      "Estruturamos toda a praça de alimentação com barracas gastronômicas modulares padronizadas, tendas, iluminação, pontos de energia individuais por barraca, geradores, alvará para vias públicas ou pátios, além de equipe de apoio e controle de caixas/fichas.",
+      "Apoiamos quermesses, festas juninas e celebrações de padroeiro com planejamento, estrutura, alimentação, segurança e operação. As necessidades de documentação e equipe são avaliadas conforme o local e o formato da festa.",
   },
   {
-    id: "equipe-alimentacao",
-    question: "Vocês fornecem equipe (staff) e alimentação de suporte?",
+    id: "estrutura-eventos",
+    question: "Vocês fornecem estrutura para eventos?",
     answer:
-      "Sim. Dimensionamos e fornecemos segurança cadastrada, bombeiros civis, limpeza, carregadores e recepcionistas. Cuidamos de toda a logística de alimentação da equipe por turnos (café, almoço, lanche e ceia) com controle rigoroso de ponto e área de apoio.",
+      "Podemos planejar e coordenar palcos, tendas, Box Truss, som, iluminação, painéis de LED e energia conforme o projeto técnico e o espaço do evento.",
+  },
+  {
+    id: "staff-alimentacao",
+    question: "Vocês fornecem staff e alimentação para eventos?",
+    answer:
+      "Apoiamos a gestão de equipes e a operação de eventos. Também avaliamos alimentação para equipes e marmitas sob demanda conforme quantidade, turnos, local e disponibilidade para cada projeto.",
+  },
+  {
+    id: "marketing-divulgacao",
+    question: "Vocês trabalham com marketing e divulgação de eventos?",
+    answer:
+      "Sim. O escopo pode incluir identidade visual, conteúdo e divulgação nas redes sociais, além de ações de comunicação e cobertura alinhadas ao evento. Canais, entregas e expectativas são combinados antes da campanha.",
+  },
+  {
+    id: "nota-fiscal-art",
+    question: "A Only in BR trabalha com documentação e ART?",
+    answer:
+      "A empresa apoia a organização da documentação técnica e da responsabilidade técnica aplicável ao evento, incluindo ART no CREA/SP quando prevista no escopo e emitida por profissional legalmente habilitado.",
   },
   {
     id: "regioes-atendidas",
     question: "Em quais regiões a Only in BR atua?",
     answer:
-      "Atendemos com estrutura própria toda a cidade de São Paulo (todas as zonas), Região Metropolitana (ABCD, Osasco, Guarulhos, etc.), Litoral Paulista e cidades do Interior de São Paulo.",
+      "Atendemos São Paulo e região. Compartilhe a cidade, o local e a data do evento para avaliarmos a logística e a disponibilidade da equipe.",
   },
   {
-    id: "parceria-botecagem",
-    question: "Como funciona a divulgação com a página @botecagemsp?",
+    id: "como-contratar",
+    question: "Como solicitar um orçamento para produzir meu evento?",
     answer:
-      "Contamos com parceria exclusiva com a página @botecagemsp para cobertura ao vivo presencial durante o evento, divulgação estratégica de lotes de ingressos e ativação de marcas patrocinadoras para milhares de pessoas em São Paulo.",
+      "Fale com a equipe e informe o objetivo, a data, a cidade, o local e o público estimado. Com essas informações, podemos entender as necessidades e orientar os próximos passos da proposta.",
   },
 ];
