@@ -7,7 +7,7 @@ type SecuritySectionProps = {
   setNewPassword: (value: string) => void;
   confirmPassword: string;
   setConfirmPassword: (value: string) => void;
-  changePassword: (password: string) => void;
+  changePassword: (password: string) => Promise<void>;
   exportDataJson: () => string;
   resetToDefaults: () => void;
   showToast: (message: string) => void;
@@ -43,7 +43,7 @@ export function SecuritySection({
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Mínimo 4 dígitos..."
+              placeholder="Mínimo 8 caracteres..."
               className="w-full px-3.5 py-2.5 rounded-xl bg-[#0b2b1c]/80 border border-white/10 text-white text-xs focus:border-brand-yellow/60 focus:outline-none"
             />
           </div>
@@ -61,19 +61,23 @@ export function SecuritySection({
         </div>
 
         <button
-          onClick={() => {
-            if (!newPassword || newPassword.length < 4) {
-              alert("A senha precisa ter pelo menos 4 caracteres.");
+          onClick={async () => {
+            if (!newPassword || newPassword.length < 8) {
+              alert("A senha precisa ter pelo menos 8 caracteres.");
               return;
             }
             if (newPassword !== confirmPassword) {
               alert("As senhas não coincidem.");
               return;
             }
-            changePassword(newPassword);
-            setNewPassword("");
-            setConfirmPassword("");
-            showToast("Senha alterada com sucesso!");
+            try {
+              await changePassword(newPassword);
+              setNewPassword("");
+              setConfirmPassword("");
+              showToast("Senha atualizada no Supabase Auth!");
+            } catch (error) {
+              showToast(error instanceof Error ? error.message : "Não foi possível atualizar a senha.");
+            }
           }}
           className="w-full py-2.5 rounded-xl bg-brand-yellow text-neutral-950 font-bold text-xs hover:scale-[1.01] transition-all cursor-pointer flex items-center justify-center gap-1 font-heading shadow-[0_16px_32px_-16px_rgba(245,189,44,0.95)]"
         >

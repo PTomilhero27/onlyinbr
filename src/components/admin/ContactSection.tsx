@@ -17,7 +17,6 @@ export function ContactSection({
   updateContact,
   showToast,
 }: ContactSectionProps) {
-  const [isSaving, setIsSaving] = useState(false);
   const [settingsError, setSettingsError] = useState("");
 
   useEffect(() => {
@@ -41,29 +40,9 @@ export function ContactSection({
     return () => controller.abort();
   }, [setContactForm]);
 
-  const handleSaveContact = async () => {
-    setIsSaving(true);
-    setSettingsError("");
-
-    try {
-      const response = await fetch("/api/admin/contact-settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: contactForm.email }),
-      });
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Não foi possível salvar o e-mail de destino.");
-      }
-
-      updateContact(contactForm);
-      showToast("E-mail de destino salvo no Supabase!");
-    } catch (error) {
-      setSettingsError(error instanceof Error ? error.message : "Não foi possível salvar as configurações.");
-    } finally {
-      setIsSaving(false);
-    }
+  const handleSaveContact = () => {
+    updateContact(contactForm);
+    showToast("WhatsApp salvo neste navegador.");
   };
 
   return (
@@ -111,14 +90,15 @@ export function ContactSection({
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-neutral-300 mb-1">E-mail que recebe os briefings</label>
+              <label className="block text-[11px] font-semibold text-neutral-300 mb-1">Destinatário fixo dos briefings</label>
               <input
                 type="email"
                 value={contactForm.email}
-                onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                placeholder="eventos@onlyinbr.com.br"
-                className="w-full px-3 py-2 rounded-xl bg-[#0b2b1c]/80 border border-white/10 text-white text-xs focus:border-brand-yellow/60 focus:outline-none"
+                readOnly
+                placeholder="Configure SALES_EMAIL no servidor"
+                className="w-full px-3 py-2 rounded-xl bg-[#0b2b1c]/80 border border-white/10 text-white/70 text-xs cursor-not-allowed"
               />
+              <p className="mt-1 text-[10px] text-neutral-500">Definido pela variável SALES_EMAIL no servidor.</p>
             </div>
           </div>
 
@@ -148,11 +128,10 @@ export function ContactSection({
           <button
             type="button"
             onClick={handleSaveContact}
-            disabled={isSaving}
             className="px-5 py-2.5 rounded-xl bg-brand-yellow text-neutral-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer font-heading shadow-[0_16px_32px_-16px_rgba(245,189,44,0.95)]"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>{isSaving ? "Salvando..." : "Salvar Dados"}</span>
+            <span>Salvar WhatsApp</span>
           </button>
         </div>
       </div>

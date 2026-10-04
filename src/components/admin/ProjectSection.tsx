@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { type PortfolioProject, type ProjectEdition } from "@/data/portfolio";
 import { renderEditionLabel } from "./utils/image-compression";
+import { FormattedNumericText } from "@/components/shared/formatted-numeric-text";
 import { cn } from "@/lib/utils";
 
 type ProjectSectionProps = {
@@ -82,7 +83,7 @@ export function ProjectSection({
                     isDraft ? "bg-amber-400" : "bg-emerald-400"
                   )}
                 />
-                <span>{proj.name}</span>
+                <span><FormattedNumericText value={proj.name} /></span>
                 {isDraft && (
                   <span className="text-[10px] font-sans px-1 py-0.2 rounded bg-amber-500/20 text-amber-300">
                     Rascunho
@@ -94,7 +95,7 @@ export function ProjectSection({
                     isSel ? "bg-neutral-950 text-brand-yellow font-bold" : "bg-white/10"
                   )}
                 >
-                  {proj.editions.length}
+                  <FormattedNumericText value={proj.editions.length} />
                 </span>
               </button>
             );
@@ -134,7 +135,7 @@ export function ProjectSection({
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-xl sm:text-2xl font-heading font-bold tracking-tight text-white truncate">
-                    {currentProject.name}
+                    <FormattedNumericText value={currentProject.name} />
                   </h3>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-yellow/15 text-brand-yellow border border-brand-yellow/30 font-sans">
                     {currentProject.categoryLabel}
@@ -197,7 +198,7 @@ export function ProjectSection({
           <div className="flex items-center justify-between py-2.5 flex-shrink-0">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">
-                Edições Realizadas ({currentProject.editions.length})
+                <FormattedNumericText value={`Edições Realizadas (${currentProject.editions.length})`} />
               </span>
             </div>
 
@@ -242,9 +243,9 @@ export function ProjectSection({
                           "px-2 py-0.5 rounded-lg bg-brand-yellow/15 text-brand-yellow font-bold text-xs border border-brand-yellow/25 font-sans"
                         )}
                         <h4 className="text-sm font-heading font-bold text-white truncate">
-                          {edition.title}
+                          <FormattedNumericText value={edition.title} />
                         </h4>
-                        <span className="text-xs text-neutral-400 font-mono">({edition.year})</span>
+                        <span className="text-xs text-neutral-400 font-mono">(<FormattedNumericText value={edition.year} />)</span>
                         {isEditionDraft && (
                           <span className="text-[10px] font-sans px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300">
                             Rascunho
@@ -295,7 +296,7 @@ export function ProjectSection({
                       {edition.audience && (
                         <div className="flex items-center gap-1">
                           <Users className="w-3 h-3 text-sky-400" />
-                          <span>{edition.audience}</span>
+                          <span><FormattedNumericText value={edition.audience} /></span>
                         </div>
                       )}
                       {edition.date && (

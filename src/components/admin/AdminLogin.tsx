@@ -9,7 +9,7 @@ type AdminLoginProps = {
   setPasswordInput: (value: string) => void;
   showPassword: boolean;
   setShowPassword: (value: boolean) => void;
-  loginError: boolean;
+  loginError: string;
   handleLoginSubmit: (event: React.FormEvent) => void;
 };
 
@@ -89,7 +89,7 @@ export function AdminLogin({
               className="p-2.5 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200 text-xs flex items-center gap-1.5"
             >
               <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 text-red-400" />
-              <span>Senha incorreta.</span>
+              <span>{loginError}</span>
             </motion.div>
           )}
 
@@ -102,12 +102,11 @@ export function AdminLogin({
           </button>
         </form>
 
-        <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-neutral-400">
+        <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-start text-xs text-neutral-400">
           <Link href="/" className="hover:text-white flex items-center gap-1 transition-colors">
             <ArrowLeft className="w-3 h-3" />
             <span>Voltar ao Site</span>
           </Link>
-          <span className="text-[10px] text-neutral-500 font-mono">onlyinbr2025</span>
         </div>
       </motion.div>
     </div>

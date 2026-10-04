@@ -1,14 +1,17 @@
 import { z } from "zod";
-import {
-  getSupabaseServerConfig,
-  getSupabaseServerHeaders,
-  hasAdminApiSession,
-} from "@/lib/server/contact-backend";
+import { hasAdminApiSession } from "@/lib/server/contact-backend";
+import { readContactSettings, writeContactSettings } from "@/lib/server/contact-settings";
 
 export const runtime = "nodejs";
 
-const emailSchema = z.object({
-  email: z.string().trim().email().max(254),
+const contactSettingsSchema = z.object({
+  whatsappNumber: z.string().trim().max(20).regex(/^\d*$/),
+  displayPhone: z.string().trim().max(40),
+  instagram: z.string().trim().max(200),
+  botecagemInstagram: z.string().trim().max(200),
+  address: z.string().trim().max(240),
+  cnpj: z.string().trim().max(32),
+  messages: z.record(z.string(), z.string().max(1000)),
 });
 
 export async function GET() {
@@ -16,30 +19,19 @@ export async function GET() {
     return Response.json({ error: "Sessão administrativa necessária." }, { status: 401 });
   }
 
-  const config = getSupabaseServerConfig();
-  if (!config) {
-    return Response.json({ error: "O armazenamento seguro do e-mail não está configurado." }, { status: 503 });
-  }
-
   try {
-    const query = new URLSearchParams({
-      key: "eq.contact_recipient_email",
-      select: "value",
-      limit: "1",
+    const contact = await readContactSettings();
+    const salesEmail = process.env.SALES_EMAIL?.trim() || "";
+    const validSalesEmail = z.string().email().safeParse(salesEmail);
+    return Response.json({
+      contact,
+      salesEmail: validSalesEmail.success ? validSalesEmail.data : "",
     });
-    const response = await fetch(`${config.url}/rest/v1/app_settings?${query}`, {
-      headers: getSupabaseServerHeaders(config.serviceRoleKey),
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      return Response.json({ error: "Não foi possível carregar o e-mail de destino." }, { status: 502 });
-    }
-
-    const rows = (await response.json()) as { value: string }[];
-    return Response.json({ email: rows[0]?.value || "" });
-  } catch {
-    return Response.json({ error: "Não foi possível carregar o e-mail de destino." }, { status: 502 });
+  } catch (error) {
+    return Response.json(
+      { error: error instanceof Error ? error.message : "Não foi possível carregar as configurações." },
+      { status: 503 }
+    );
   }
 }
 
@@ -48,46 +40,30 @@ export async function PUT(request: Request) {
     return Response.json({ error: "Sessão administrativa necessária." }, { status: 401 });
   }
 
-  const config = getSupabaseServerConfig();
-  if (!config) {
-    return Response.json({ error: "O armazenamento seguro do e-mail não está configurado." }, { status: 503 });
-  }
-
   let parsed;
   try {
-    parsed = emailSchema.safeParse(await request.json());
+    parsed = contactSettingsSchema.safeParse(await request.json());
   } catch {
-    return Response.json({ error: "Informe um e-mail válido." }, { status: 400 });
+    return Response.json({ error: "Dados de contato inválidos." }, { status: 400 });
   }
 
   if (!parsed.success) {
-    return Response.json({ error: "Informe um e-mail válido." }, { status: 400 });
+    return Response.json({ error: "Confira os dados do contato e tente novamente." }, { status: 400 });
   }
 
   try {
-    const response = await fetch(
-      `${config.url}/rest/v1/app_settings?on_conflict=key`,
-      {
-        method: "POST",
-        headers: {
-          ...getSupabaseServerHeaders(config.serviceRoleKey),
-          Prefer: "resolution=merge-duplicates,return=minimal",
-        },
-        body: JSON.stringify({
-          key: "contact_recipient_email",
-          value: parsed.data.email,
-          updated_at: new Date().toISOString(),
-        }),
-        cache: "no-store",
-      }
+    const contact = await writeContactSettings(parsed.data);
+    const salesEmail = process.env.SALES_EMAIL?.trim() || "";
+    const validSalesEmail = z.string().email().safeParse(salesEmail);
+    return Response.json({
+      ok: true,
+      contact,
+      salesEmail: validSalesEmail.success ? validSalesEmail.data : "",
+    });
+  } catch (error) {
+    return Response.json(
+      { error: error instanceof Error ? error.message : "Não foi possível salvar as configurações." },
+      { status: 503 }
     );
-
-    if (!response.ok) {
-      return Response.json({ error: "Não foi possível salvar o e-mail de destino." }, { status: 502 });
-    }
-
-    return Response.json({ ok: true, email: parsed.data.email });
-  } catch {
-    return Response.json({ error: "Não foi possível salvar o e-mail de destino." }, { status: 502 });
   }
 }

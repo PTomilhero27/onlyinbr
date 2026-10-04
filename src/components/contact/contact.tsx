@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, CheckCircle2, MessageCircle, Clock, ShieldCheck, Zap } from "lucide-react";
+import { Send, CheckCircle2 } from "lucide-react";
 import { WhatsAppCTA } from "@/components/shared/whatsapp-cta";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,7 +30,10 @@ const initialForm: FormData = {
 
 export function Contact() {
   const [form, setForm] = useState<FormData>(initialForm);
-  const [submissionResult, setSubmissionResult] = useState<{ emailSent: boolean } | null>(null);
+  const [submissionResult, setSubmissionResult] = useState<{
+    databaseSaved: boolean;
+    emailSent: boolean;
+  } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
@@ -62,7 +65,10 @@ export function Contact() {
         return;
       }
 
-      setSubmissionResult({ emailSent: Boolean(result.emailSent) });
+      setSubmissionResult({
+        databaseSaved: Boolean(result.databaseSaved),
+        emailSent: Boolean(result.emailSent),
+      });
       setForm(initialForm);
     } catch {
       setSubmitError("Não foi possível conectar ao servidor. Seus dados ainda não foram enviados.");
@@ -163,12 +169,18 @@ export function Contact() {
             >
               <CheckCircle2 className="w-10 h-10 text-brand-yellow mx-auto mb-2" />
               <p className="text-white font-heading font-bold text-xl mb-1">
-                {submissionResult.emailSent ? "Briefing enviado com sucesso!" : "Briefing registrado"}
+                {submissionResult.databaseSaved && submissionResult.emailSent
+                  ? "Briefing enviado e registrado!"
+                  : submissionResult.emailSent
+                    ? "Briefing enviado por e-mail"
+                    : "Briefing registrado no banco"}
               </p>
               <p className="text-neutral-300 text-sm font-normal">
-                {submissionResult.emailSent
+                {submissionResult.databaseSaved && submissionResult.emailSent
                   ? "Seus dados foram salvos e enviados para nossa equipe. Em breve entraremos em contato."
-                  : "Seus dados foram salvos no banco, mas a notificação por e-mail não foi concluída. Entre em contato pelo WhatsApp para agilizar o atendimento."}
+                  : submissionResult.emailSent
+                    ? "Nossa equipe recebeu seus dados por e-mail, mas eles não foram salvos no banco."
+                    : "Seus dados foram salvos no banco, mas o e-mail não foi enviado. Entre em contato pelo WhatsApp para agilizar o atendimento."}
               </p>
               <button
                 onClick={() => setSubmissionResult(null)}

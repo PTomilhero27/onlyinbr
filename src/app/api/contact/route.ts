@@ -1,4 +1,5 @@
 import { z } from "zod";
+import nodemailer from "nodemailer";
 import {
   getSupabaseServerConfig,
   getSupabaseServerHeaders,
@@ -85,13 +86,6 @@ export async function POST(request: Request) {
   }
 
   const config = getSupabaseServerConfig();
-  if (!config) {
-    return Response.json(
-      { error: "O envio ainda não está configurado no servidor. Seus dados não foram enviados." },
-      { status: 503 }
-    );
-  }
-
   const lead = {
     name: parsed.data.name,
     company: parsed.data.company || null,
@@ -101,55 +95,51 @@ export async function POST(request: Request) {
     message: parsed.data.message,
   };
 
-  try {
-    const databaseResponse = await fetch(`${config.url}/rest/v1/contact_leads`, {
-      method: "POST",
-      headers: {
-        ...getSupabaseServerHeaders(config.serviceRoleKey),
-        Prefer: "return=minimal",
-      },
-      body: JSON.stringify(lead),
-      cache: "no-store",
-    });
+  let databaseSaved = false;
+  let databaseError = "database_not_configured";
 
-    if (!databaseResponse.ok) {
-      console.error("Contact lead could not be saved to Supabase:", databaseResponse.status);
-      return Response.json(
-        { error: "Não foi possível salvar seu briefing. Tente novamente em instantes." },
-        { status: 502 }
-      );
+  if (config) {
+    try {
+      const databaseResponse = await fetch(`${config.url}/rest/v1/contact_leads`, {
+        method: "POST",
+        headers: {
+          ...getSupabaseServerHeaders(config.serviceRoleKey),
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify(lead),
+        cache: "no-store",
+      });
+
+      if (databaseResponse.ok) {
+        databaseSaved = true;
+        databaseError = "";
+      } else {
+        databaseError = "database_save_failed";
+        console.error("Contact lead could not be saved to Supabase:", databaseResponse.status);
+      }
+    } catch {
+      databaseError = "database_save_failed";
     }
-  } catch {
+  }
+
+  const recipientResult = z.string().trim().email().safeParse(process.env.SALES_EMAIL);
+  const recipient = recipientResult.success ? recipientResult.data : "";
+
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = Number(process.env.SMTP_PORT || 0);
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPassword = process.env.SMTP_PASS;
+  const sender = process.env.SMTP_FROM_EMAIL || smtpUser;
+
+  if (!recipient || !smtpHost || !Number.isInteger(smtpPort) || !smtpPort || !smtpUser || !smtpPassword || !sender) {
+    if (databaseSaved) {
+      return Response.json({ ok: true, databaseSaved, emailSent: false, reason: "email_not_configured" }, { status: 201 });
+    }
+
     return Response.json(
-      { error: "Não foi possível salvar seu briefing. Tente novamente em instantes." },
-      { status: 502 }
+      { ok: false, databaseSaved, emailSent: false, error: "Configure Supabase e SMTP no servidor para enviar o briefing." },
+      { status: 503 }
     );
-  }
-
-  let recipient = "";
-  try {
-    const query = new URLSearchParams({
-      key: "eq.contact_recipient_email",
-      select: "value",
-      limit: "1",
-    });
-    const settingsResponse = await fetch(`${config.url}/rest/v1/app_settings?${query}`, {
-      headers: getSupabaseServerHeaders(config.serviceRoleKey),
-      cache: "no-store",
-    });
-
-    if (settingsResponse.ok) {
-      const settings = (await settingsResponse.json()) as { value: string }[];
-      recipient = settings[0]?.value || "";
-    }
-  } catch {
-    recipient = "";
-  }
-
-  const resendApiKey = process.env.RESEND_API_KEY;
-  const sender = process.env.RESEND_FROM_EMAIL;
-  if (!recipient || !resendApiKey || !sender) {
-    return Response.json({ ok: true, emailSent: false, reason: "email_not_configured" }, { status: 201 });
   }
 
   const emailFields = [
@@ -165,31 +155,38 @@ export async function POST(request: Request) {
     .join("");
   const text = emailFields.map(([label, value]) => `${label}: ${value || ""}`).join("\n\n");
 
-  try {
-    const emailResponse = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: sender,
-        to: [recipient],
-        reply_to: lead.email,
-        subject: `Novo briefing de evento: ${lead.name}`,
-        html,
-        text,
-      }),
-      cache: "no-store",
-    });
+  const transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: smtpPort,
+    secure: process.env.SMTP_SECURE === "true" || smtpPort === 465,
+    auth: { user: smtpUser, pass: smtpPassword },
+    connectionTimeout: 15000,
+    greetingTimeout: 10000,
+    socketTimeout: 20000,
+  });
 
-    if (!emailResponse.ok) {
-      console.error("Resend rejected contact notification:", emailResponse.status);
-      return Response.json({ ok: true, emailSent: false, reason: "email_delivery_failed" }, { status: 201 });
-    }
+  try {
+    await transporter.sendMail({
+      from: sender,
+      to: recipient,
+      replyTo: lead.email,
+      subject: `Novo briefing de evento: ${lead.name}`,
+      html,
+      text,
+    });
   } catch {
-    return Response.json({ ok: true, emailSent: false, reason: "email_delivery_failed" }, { status: 201 });
+    if (databaseSaved) {
+      return Response.json({ ok: true, databaseSaved, emailSent: false, reason: "email_delivery_failed" }, { status: 201 });
+    }
+
+    return Response.json(
+      { ok: false, databaseSaved, emailSent: false, error: "Não foi possível salvar nem enviar o briefing. Tente novamente." },
+      { status: 502 }
+    );
   }
 
-  return Response.json({ ok: true, emailSent: true }, { status: 201 });
+  return Response.json(
+    { ok: true, databaseSaved, emailSent: true, databaseError: databaseSaved ? undefined : databaseError },
+    { status: 201 }
+  );
 }

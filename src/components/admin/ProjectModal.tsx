@@ -7,6 +7,7 @@ import { X, Save, Image as ImageIcon, Sparkles } from "lucide-react";
 import { type PortfolioProject } from "@/data/portfolio";
 import { compressFileToDataUrl } from "./utils/image-compression";
 import { cn } from "@/lib/utils";
+import { FormattedNumericText } from "@/components/shared/formatted-numeric-text";
 
 type ProjectModalProps = {
   isOpen: boolean;
@@ -264,16 +265,16 @@ export function ProjectModal({
                       <div className="space-y-2 p-3">
                         <div className="flex items-center gap-2">
                           <span className="inline-flex rounded-full border border-brand-yellow/50 bg-brand-yellow/10 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-brand-yellow">
-                            {formData.name || "Projeto"}
+                            <FormattedNumericText value={formData.name || "Projeto"} />
                           </span>
                         </div>
 
                         <h4 className="text-base font-heading font-bold text-white leading-snug">
-                          {formData.tagline || "Estrutura premium e produção 360°"}
+                          <FormattedNumericText value={formData.tagline || "Estrutura premium e produção 360°"} />
                         </h4>
 
                         <p className="text-[11px] text-neutral-300">
-                          {formData.stats?.totalAudience || "+15.000 pessoas"}
+                          <FormattedNumericText value={formData.stats?.totalAudience || "+15.000 pessoas"} />
                         </p>
                       </div>
                     </div>

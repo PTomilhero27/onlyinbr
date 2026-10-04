@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Image as ImageIcon } from "lucide-react";
 import { type PortfolioProject, type ProjectEdition } from "@/data/portfolio";
 import { compressFileToDataUrl, renderEditionLabel } from "./utils/image-compression";
+import { FormattedNumericText } from "@/components/shared/formatted-numeric-text";
 import { cn } from "@/lib/utils";
 
 type EditionModalProps = {
@@ -257,7 +258,7 @@ export function EditionModal({
                 <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-300">
                   <span>Preview da Edição</span>
                   <span className="rounded-full px-2 py-1 border border-brand-yellow/40 bg-brand-yellow/10 text-brand-yellow">
-                    {edition.year}
+                    <FormattedNumericText value={edition.year} />
                   </span>
                 </div>
 
@@ -278,18 +279,18 @@ export function EditionModal({
                         "inline-flex items-center rounded-full border border-brand-yellow/50 bg-brand-yellow/10 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-brand-yellow"
                       )}
                       <span className="text-[9px] uppercase tracking-[0.14em] text-neutral-400">
-                        {edition.year || "2025"}
+                        <FormattedNumericText value={edition.year || "2025"} />
                       </span>
                     </div>
 
                     <h4 className="text-base font-heading font-bold text-white leading-snug">
-                      {edition.title || `${currentProject?.name || "Projeto"} — Edição`}
+                      <FormattedNumericText value={edition.title || `${currentProject?.name || "Projeto"} — Edição`} />
                     </h4>
 
                     <div className="space-y-1 text-[11px] text-neutral-300">
-                      <p>{edition.location || "São Paulo, SP"}</p>
-                      <p>{edition.audience || "5.000+ pessoas"}</p>
-                      <p>{edition.date || "Dez/2024"}</p>
+                      <p><FormattedNumericText value={edition.location || "São Paulo, SP"} /></p>
+                      <p><FormattedNumericText value={edition.audience || "5.000+ pessoas"} /></p>
+                      <p><FormattedNumericText value={edition.date || "Dez/2024"} /></p>
                     </div>
                   </div>
                 </div>

@@ -2,6 +2,7 @@
 
 import { ArrowRight, HelpCircle, Layers, Phone, Shield } from "lucide-react";
 import { type ContactConfig } from "@/lib/store";
+import { FormattedNumericText } from "@/components/shared/formatted-numeric-text";
 import { type FaqItem } from "@/data/faq";
 import { type PortfolioProject } from "@/data/portfolio";
 
@@ -34,11 +35,11 @@ export function OverviewSection({
         <div className="hidden sm:flex items-center gap-3 text-xs font-semibold text-neutral-300">
           <span className="px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/10 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            {projects.length} Projetos
+            <FormattedNumericText value={`${projects.length} Projetos`} />
           </span>
           <span className="px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/10 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-brand-yellow" />
-            {totalEditionsCount} Edições
+            <FormattedNumericText value={`${totalEditionsCount} Edições`} />
           </span>
         </div>
       </div>
@@ -57,7 +58,7 @@ export function OverviewSection({
               </div>
 
               <span className="text-[11px] font-sans font-semibold px-3 py-1 rounded-full bg-brand-yellow/15 text-brand-yellow border border-brand-yellow/30">
-                {projects.length} Projetos · {totalEditionsCount} Edições
+                <FormattedNumericText value={`${projects.length} Projetos · ${totalEditionsCount} Edições`} />
               </span>
             </div>
 
@@ -71,7 +72,7 @@ export function OverviewSection({
                   key={p.id}
                   className="text-[10px] font-sans font-medium px-2.5 py-0.5 rounded-lg bg-white/[0.06] text-neutral-300 border border-white/10"
                 >
-                  {p.name}
+                  <FormattedNumericText value={p.name} />
                 </span>
               ))}
             </div>

@@ -185,8 +185,8 @@
   .edition-number {
     font-family: var(--font-body-custom), "Segoe UI", Arial, sans-serif;
     font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.08em;
+    line-height: 1.1;
+    letter-spacing: 0;
     font-variant-numeric: lining-nums tabular-nums;
   }
 
@@ -196,10 +196,9 @@
     font-family: var(--font-body-custom), "Segoe UI", Arial, sans-serif;
     font-weight: 800;
     font-size: 0.72em;
-    line-height: 0;
+    line-height: 1;
     vertical-align: super;
-    transform: translateY(-0.06em);
-    margin-left: 0.02em;
+    margin-left: 0.03em;
   }
 
   .bg-brand-green { background-color: #196132; }

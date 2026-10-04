@@ -39,21 +39,18 @@ export type SiteStoreData = {
   projects: PortfolioProject[];
   faq: FaqItem[];
   contact: ContactConfig;
-  adminPassword: string;
 };
 
 const STORAGE_KEY = "onlyinbr_admin_site_data_v2";
 const AUTH_KEY = "onlyinbr_admin_session_auth";
-const DEFAULT_ADMIN_PASS = "onlyinbr2025";
 
 interface SiteStoreContextType {
   projects: PortfolioProject[];
   faq: FaqItem[];
   contact: ContactConfig;
   isAuthenticated: boolean;
-  login: (password: string) => boolean;
+  authenticateAdmin: () => void;
   logout: () => void;
-  changePassword: (newPass: string) => void;
 
   // Status de Sincronização Supabase
   isSyncing: boolean;
@@ -84,7 +81,7 @@ interface SiteStoreContextType {
   deleteFaqItem: (id: string) => void;
 
   // Ações de Contato / WhatsApp
-  updateContact: (newContact: Partial<ContactConfig>) => void;
+  updateContact: (newContact: Partial<ContactConfig>) => Promise<void>;
 
   // Utilidades
   resetToDefaults: () => void;
@@ -98,7 +95,6 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
   const [projects, setProjects] = useState<PortfolioProject[]>(initialProjects);
   const [faq, setFaq] = useState<FaqItem[]>(initialFaqItems);
   const [contact, setContact] = useState<ContactConfig>(initialContactConfig);
-  const [adminPassword, setAdminPassword] = useState<string>(DEFAULT_ADMIN_PASS);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
@@ -119,7 +115,15 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
     try {
       const savedAuth = sessionStorage.getItem(AUTH_KEY);
       if (savedAuth === "true") {
-        setIsAuthenticated(true);
+        fetch("/api/admin/session", { cache: "no-store" })
+          .then((response) => {
+            if (response.ok) {
+              setIsAuthenticated(true);
+            } else {
+              sessionStorage.removeItem(AUTH_KEY);
+            }
+          })
+          .catch(() => sessionStorage.removeItem(AUTH_KEY));
       }
 
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -131,13 +135,21 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         if (parsed.faq && Array.isArray(parsed.faq)) {
           setFaq(parsed.faq);
         }
-        if (parsed.contact) {
-          setContact((prev) => ({ ...prev, ...parsed.contact }));
-        }
-        if (parsed.adminPassword) {
-          setAdminPassword(parsed.adminPassword);
-        }
       }
+
+      fetch("/api/contact-settings", { cache: "no-store" })
+        .then(async (response) => {
+          if (!response.ok) return;
+          const result = await response.json();
+          if (!result.contact) return;
+
+          setContact((current) => ({
+            ...current,
+            ...result.contact,
+            messages: { ...current.messages, ...(result.contact.messages || {}) },
+          }));
+        })
+        .catch((err) => console.warn("Não foi possível carregar o contato global:", err));
 
       // Sincroniza com o Supabase oficial
       if (isSupabaseConfigured) {
@@ -167,17 +179,12 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isLoaded) return;
     try {
-      const dataToSave: SiteStoreData = {
-        projects,
-        faq,
-        contact,
-        adminPassword,
-      };
+      const dataToSave = { projects, faq };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     } catch (e) {
       console.error("Erro ao salvar dados no localStorage:", e);
     }
-  }, [projects, faq, contact, adminPassword, isLoaded]);
+  }, [projects, faq, isLoaded]);
 
   // Recarrega dados diretamente do Supabase
   const refreshFromSupabase = useCallback(async () => {
@@ -224,25 +231,15 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
     }
   }, [projects, clearSyncFeedback]);
 
-  // Autenticação
-  const login = (password: string): boolean => {
-    if (password.trim() === adminPassword || password.trim() === DEFAULT_ADMIN_PASS) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem(AUTH_KEY, "true");
-      return true;
-    }
-    return false;
+  // A API já validou a senha no Supabase antes de criar a sessão HTTP-only.
+  const authenticateAdmin = () => {
+    setIsAuthenticated(true);
+    sessionStorage.setItem(AUTH_KEY, "true");
   };
 
   const logout = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem(AUTH_KEY);
-  };
-
-  const changePassword = (newPass: string) => {
-    if (newPass.trim()) {
-      setAdminPassword(newPass.trim());
-    }
   };
 
   // ── PROJETOS ──
@@ -575,12 +572,25 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   // ── CONTATO ──
-  const updateContact = (newContact: Partial<ContactConfig>) => {
-    setContact((prev) => ({
-      ...prev,
-      ...newContact,
-      messages: { ...prev.messages, ...(newContact.messages || {}) },
-    }));
+  const updateContact = async (newContact: Partial<ContactConfig>) => {
+    const response = await fetch("/api/admin/contact-settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newContact),
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Não foi possível salvar o contato global no Supabase.");
+    }
+
+    if (result.contact) {
+      setContact((current) => ({
+        ...current,
+        ...result.contact,
+        messages: { ...current.messages, ...(result.contact.messages || {}) },
+      }));
+    }
   };
 
   // ── UTILITÁRIOS ──
@@ -588,7 +598,6 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
     setProjects(initialProjects);
     setFaq(initialFaqItems);
     setContact(initialContactConfig);
-    setAdminPassword(DEFAULT_ADMIN_PASS);
     localStorage.removeItem(STORAGE_KEY);
   };
 
@@ -597,7 +606,6 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
       projects,
       faq,
       contact,
-      adminPassword,
     };
     return JSON.stringify(data, null, 2);
   };
@@ -611,12 +619,7 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
       if (parsed.faq && Array.isArray(parsed.faq)) {
         setFaq(parsed.faq);
       }
-      if (parsed.contact) {
-        setContact(parsed.contact);
-      }
-      if (parsed.adminPassword) {
-        setAdminPassword(parsed.adminPassword);
-      }
+      if (parsed.contact) void updateContact(parsed.contact).catch((error) => console.error(error));
       return true;
     } catch (e) {
       console.error("Erro ao importar JSON:", e);
@@ -631,9 +634,8 @@ export function SiteStoreProvider({ children }: { children: React.ReactNode }) {
         faq,
         contact,
         isAuthenticated,
-        login,
+        authenticateAdmin,
         logout,
-        changePassword,
         isSyncing,
         syncError,
         syncSuccess,
@@ -671,9 +673,8 @@ export function useSiteStore() {
       faq: initialFaqItems,
       contact: initialContactConfig,
       isAuthenticated: false,
-      login: () => false,
+      authenticateAdmin: () => {},
       logout: () => {},
-      changePassword: () => {},
       isSyncing: false,
       syncError: null,
       syncSuccess: false,
@@ -692,7 +693,7 @@ export function useSiteStore() {
       addFaqItem: () => {},
       updateFaqItem: () => {},
       deleteFaqItem: () => {},
-      updateContact: () => {},
+      updateContact: async () => {},
       resetToDefaults: () => {},
       exportDataJson: () => "",
       importDataJson: () => false,

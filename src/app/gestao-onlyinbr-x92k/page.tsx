@@ -29,9 +29,8 @@ export default function AdminPage() {
     faq,
     contact,
     isAuthenticated,
-    login,
+    authenticateAdmin,
     logout,
-    changePassword,
     isSyncing,
     syncError,
     syncSuccess,
@@ -58,7 +57,7 @@ export default function AdminPage() {
   // Estados de Autenticação / Login
   const [passwordInput, setPasswordInput] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   // Navegação: Seção ativa
   const [activeSection, setActiveSection] = useState<AdminSection>("projects");
@@ -104,29 +103,37 @@ export default function AdminPage() {
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const password = passwordInput;
-    const ok = login(password);
-    if (!ok) {
-      setLoginError(true);
-      setTimeout(() => setLoginError(false), 2000);
-    } else {
-      try {
-        const response = await fetch("/api/admin/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password }),
-        });
+    setLoginError("");
 
-        if (!response.ok) {
-          const result = await response.json();
-          showToast(result.error || "O painel entrou, mas a integração server-side ainda não está ativa.");
-        }
-      } catch {
-        showToast("O painel entrou, mas não foi possível iniciar a sessão segura do servidor.");
+    try {
+      const response = await fetch("/api/admin/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: passwordInput }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        setLoginError(result.error || "Não foi possível autenticar no Supabase.");
+        return;
       }
 
+      authenticateAdmin();
       setPasswordInput("");
-      setLoginError(false);
+    } catch {
+      setLoginError("Não foi possível conectar ao Supabase Auth.");
+    }
+  };
+
+  const handlePasswordChange = async (password: string) => {
+    const response = await fetch("/api/admin/session", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.error || "Não foi possível atualizar a senha no Supabase.");
     }
   };
 
@@ -464,7 +471,7 @@ export default function AdminPage() {
             setNewPassword={setNewPassword}
             confirmPassword={confirmPassword}
             setConfirmPassword={setConfirmPassword}
-            changePassword={changePassword}
+            changePassword={handlePasswordChange}
             exportDataJson={exportDataJson}
             resetToDefaults={resetToDefaults}
             showToast={showToast}

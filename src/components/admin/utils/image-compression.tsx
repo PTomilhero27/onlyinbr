@@ -1,4 +1,5 @@
 import React from "react";
+import { FormattedNumericText } from "@/components/shared/formatted-numeric-text";
 
 /**
  * Utilitários de compressão de imagens via Canvas WebP e formatação de texto para o painel de administração.
@@ -71,20 +72,18 @@ export function renderEditionLabel(
   const match = normalized.match(/^(\d+)\s*([ºª°])?(?:\s*(.*))?$/i);
 
   if (!match) {
-    return <span className={className}>{normalized || "Edição"}</span>;
+    return (
+      <span className={className}>
+        <FormattedNumericText value={normalized || "Edição"} />
+      </span>
+    );
   }
 
   const [, number, suffix = "ª", rest = ""] = match;
 
   return (
     <span className={className}>
-      <span className="edition-number">{number}</span>
-      {suffix ? (
-        <span className={suffix === "°" ? "degree-symbol" : "edition-ordinal"}>
-          {suffix}
-        </span>
-      ) : null}
-      {rest ? <span className="ml-1">{rest}</span> : null}
+      <FormattedNumericText value={`${number}${suffix}${rest ? ` ${rest}` : ""}`} />
     </span>
   );
 }

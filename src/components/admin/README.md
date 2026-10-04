@@ -71,9 +71,10 @@ src/
 - **Props:**
   - `passwordInput`, `setPasswordInput`: controle do campo de senha.
   - `showPassword`, `setShowPassword`: alternar visualização de texto/oculto.
-  - `loginError`: booleano indicando erro para disparar animação de tremor/destaque vermelho.
+  - `loginError`: mensagem retornada pela autenticação para exibir erro.
   - `handleLoginSubmit(event)`: submissão do formulário de login.
-- **O que faz:** Protege o acesso ao painel. Senha padrão inicial configurada no store (`onlyinbr2025`), alterável na aba de Segurança.
+- **O que faz:** valida a senha via Supabase Auth. O e-mail administrador deve ser um usuário confirmado do Supabase e corresponder a `SUPABASE_ADMIN_EMAIL` no servidor. O access token fica em cookie HTTP-only; a senha não é armazenada no navegador.
+- **Configuração:** crie/confirme o usuário em Supabase Dashboard → Authentication → Users, defina `SUPABASE_ADMIN_EMAIL` no `.env.local` e use a senha dessa conta. A aba Segurança altera a senha pelo Supabase Auth.
 
 ---
 

@@ -34,6 +34,7 @@ import { getWhatsAppLink } from "@/lib/whatsapp";
 import { defaultViewport } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { useSiteStore } from "@/lib/store";
+import { FormattedNumericText } from "@/components/shared/formatted-numeric-text";
 
 export function Portfolio() {
   const { projects: storeProjects, contact } = useSiteStore();
@@ -286,7 +287,7 @@ export function Portfolio() {
 
                     <span className="text-[11px] font-bold text-white bg-brand-green/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 shadow-lg flex items-center gap-1.5">
                       <Layers className="w-3.5 h-3.5 text-brand-yellow" />
-                      <span>{project.totalEditions} Edições Realizadas</span>
+                      <span><FormattedNumericText value={`${project.totalEditions} Edições Realizadas`} /></span>
                     </span>
                   </div>
 
@@ -294,13 +295,13 @@ export function Portfolio() {
                   <div className="absolute bottom-4 inset-x-4 z-10">
                     <div className="flex items-center gap-2 text-xs text-brand-yellow font-semibold mb-1">
                       <MapPin className="w-3.5 h-3.5" />
-                      <span>{project.editions[0]?.location || "São Paulo, SP"}</span>
+                      <span><FormattedNumericText value={project.editions[0]?.location || "São Paulo, SP"} /></span>
                       <span className="text-white/40">•</span>
-                      <span>{project.stats.totalAudience}</span>
+                      <span><FormattedNumericText value={project.stats.totalAudience} /></span>
                     </div>
 
                     <h3 className="text-2xl sm:text-3xl font-heading font-black text-white leading-tight mb-1 group-hover:text-brand-yellow transition-colors flex items-center justify-between">
-                      <span>{project.name}</span>
+                      <span><FormattedNumericText value={project.name} /></span>
                       <span className="w-9 h-9 rounded-full bg-brand-yellow text-neutral-950 flex items-center justify-center text-sm transform group-hover:translate-x-1 group-hover:scale-110 transition-transform">
                         <ArrowRight className="w-4 h-4" />
                       </span>
@@ -336,11 +337,9 @@ export function Portfolio() {
                         className="text-xs font-medium px-2.5 py-1 rounded-lg bg-white/[0.07] hover:bg-brand-yellow hover:text-neutral-950 border border-white/10 hover:border-brand-yellow transition-all duration-200 flex items-center gap-1.5"
                       >
                         <span className="font-bold text-brand-yellow group-hover/btn:text-neutral-950 inline-flex items-center gap-0.5 leading-none">
-                          <span className="edition-number">{ed.editionNumber.replace(/([0-9]+)([ºª°]).*/i, "$1")}</span>
-                          <span className={ed.editionNumber.includes("°") ? "degree-symbol" : "edition-ordinal"}>{ed.editionNumber.match(/[ºª°]/)?.[0] || "ª"}</span>
-                          <span className="ml-1">Edição</span>
+                          <FormattedNumericText value={`${ed.editionNumber.replace(/\s*Edição.*$/i, "")} Edição`} />
                         </span>
-                        <span className="text-neutral-300">({ed.year})</span>
+                        <span className="text-neutral-300">(<FormattedNumericText value={ed.year} />)</span>
                       </button>
                     ))}
                   </div>
@@ -458,15 +457,15 @@ export function Portfolio() {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-bold uppercase tracking-wider text-brand-yellow">
-                      {activeProject.name}
+                      <FormattedNumericText value={activeProject.name} />
                     </span>
                     <span className="text-neutral-500">•</span>
                     <span className="text-xs text-neutral-300">
-                      {activeProject.totalEditions} Edições Registradas
+                      <FormattedNumericText value={`${activeProject.totalEditions} Edições Registradas`} />
                     </span>
                   </div>
                   <h3 className="text-xl sm:text-2xl font-heading font-bold text-white">
-                    {currentEdition.title}
+                    <FormattedNumericText value={currentEdition.title} />
                   </h3>
                 </div>
 
@@ -498,11 +497,10 @@ export function Portfolio() {
                       )}
                     >
                       <span className="inline-flex items-center gap-0.5 leading-none">
-                        <span className="edition-number">{ed.editionNumber.replace(/([0-9]+)([ºª°]).*/i, "$1")}</span>
-                        <span className={ed.editionNumber.includes("°") ? "degree-symbol" : "edition-ordinal"}>{ed.editionNumber.match(/[ºª°]/)?.[0] || "ª"}</span>
+                        <FormattedNumericText value={ed.editionNumber} />
                       </span>
                       <span className={cn("text-[10px]", isCurrent ? "text-neutral-900" : "text-neutral-400")}>
-                        ({ed.year})
+                        (<FormattedNumericText value={ed.year} />)
                       </span>
                     </button>
                   );
@@ -518,7 +516,7 @@ export function Portfolio() {
                     <div>
                       <span className="text-[10px] uppercase font-bold text-neutral-400 block">Local</span>
                       <span className="text-xs sm:text-sm font-semibold text-white">
-                        {currentEdition.location}
+                        <FormattedNumericText value={currentEdition.location} />
                       </span>
                     </div>
                   </div>
@@ -528,7 +526,7 @@ export function Portfolio() {
                     <div>
                       <span className="text-[10px] uppercase font-bold text-neutral-400 block">Data</span>
                       <span className="text-xs sm:text-sm font-semibold text-white">
-                        {currentEdition.date}
+                        <FormattedNumericText value={currentEdition.date} />
                       </span>
                     </div>
                   </div>
@@ -538,7 +536,7 @@ export function Portfolio() {
                     <div>
                       <span className="text-[10px] uppercase font-bold text-neutral-400 block">Público</span>
                       <span className="text-xs sm:text-sm font-semibold text-white">
-                        {currentEdition.audience}
+                        <FormattedNumericText value={currentEdition.audience} />
                       </span>
                     </div>
                   </div>
@@ -550,7 +548,7 @@ export function Portfolio() {
                     Sobre Esta Edição
                   </h4>
                   <p className="text-sm text-neutral-200 leading-relaxed">
-                    {currentEdition.description}
+                    <FormattedNumericText value={currentEdition.description} />
                   </p>
                 </div>
 
@@ -565,7 +563,7 @@ export function Portfolio() {
                       {currentEdition.highlights.map((h, i) => (
                         <li key={i} className="text-xs text-neutral-200 flex items-start gap-2">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                          <span>{h}</span>
+                          <span><FormattedNumericText value={h} /></span>
                         </li>
                       ))}
                     </ul>
@@ -580,7 +578,7 @@ export function Portfolio() {
                       {currentEdition.scope.map((s, i) => (
                         <li key={i} className="text-xs text-neutral-200 flex items-start gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-brand-yellow flex-shrink-0 mt-1.5" />
-                          <span>{s}</span>
+                          <span><FormattedNumericText value={s} /></span>
                         </li>
                       ))}
                     </ul>
